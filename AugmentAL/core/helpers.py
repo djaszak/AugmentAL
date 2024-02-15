@@ -42,6 +42,14 @@ def create_small_text_dataset(
 
     tokenizer = AutoTokenizer.from_pretrained(TransformerModels.BERT_TINY.value)
 
+    # HERE COMES THE CREATION OF AUGMENT_DICT
+    augmented_indices = {}
+    # TODO:
+    # augment_dict = {}
+    # raw_dataset.map(augment_method)
+    # here I need some mechanism, to save the augmentend_indices
+    # Check HF reference for .map()
+
     # TRANSFORM INTO SMALL TEXT
     target_labels = np.arange(num_classes)
 
@@ -60,7 +68,7 @@ def create_small_text_dataset(
         target_labels=target_labels,
     )
 
-    return (train, test, num_classes)
+    return (train, test, num_classes, augmented_indices)
 
 
 def warm_start_active_learner(active_learner, y_train):
@@ -77,7 +85,7 @@ def create_active_learner(
     num_classes: int,
     query_strategy: QueryStrategy = PredictionEntropy,
 ) -> set[PoolBasedActiveLearner, int]:
-    """Load transformer
+    """Load transformer, build clf_factory based on it and return a PoolBasedActiveLearner.
 
     Args:
         train_set (TransformersDataset): A training set
@@ -97,8 +105,6 @@ def create_active_learner(
     indices_labeled = warm_start_active_learner(active_learner, train_set.y)
 
     return active_learner, indices_labeled
-
-
 
 
 def evaluate(active_learner, train, test):

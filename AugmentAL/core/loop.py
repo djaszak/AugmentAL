@@ -1,15 +1,17 @@
 import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 
 from helpers import evaluate, create_active_learner, create_small_text_dataset
 from constants import Datasets
+from query_strategies import AugmentedEntropyQueryStrategy
 
 # SETUP
-test, train, num_classes = create_small_text_dataset(Datasets.ROTTEN.value)
+test, train, num_classes, augmented_indices = create_small_text_dataset(Datasets.ROTTEN.value)
 # HERE ONE COULD ADD ITS OWN QUERY_STRATEGY
-active_learner, indices_labeled = create_active_learner(train, num_classes)
+active_learner, indices_labeled = create_active_learner(
+    train, num_classes, AugmentedEntropyQueryStrategy
+)
 
 # USE INITIALIZED ACTIVE LEARNER AND GO INTO LOOP
 num_queries = 10
@@ -21,6 +23,11 @@ results.append(evaluate(active_learner, train[indices_labeled], test))
 for i in range(num_queries):
     # ...where each iteration consists of labelling 20 samples
     indices_queried = active_learner.query(num_samples=20)
+    print(f"indices_queried: {indices_queried}")
+
+    for index in indices_queried:
+        if index in augmented_indices:
+            indices_queried.append(augmented_indices[index])
 
     # Simulate user interaction here. Replace this for real-world usage.
     y = train.y[indices_queried]
@@ -45,5 +52,5 @@ accuracies = np.array(results)
 d = {"iterations": iterations, "accuracies": accuracies}
 d_frame = pd.DataFrame(d)
 
-with open(f'PredictionEntropy_results.json', 'w') as f:
+with open(f"PredictionEntropy_results.json", "w") as f:
     f.write(d_frame.to_json())
