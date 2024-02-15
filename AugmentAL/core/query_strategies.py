@@ -50,13 +50,15 @@ class AugmentedExtensionQueryStrategy(AugmentedQueryStrategyBase):
         query = self.base_strategy.query(
             clf, dataset, indices_unlabeled, indices_labeled, y, n
         )
+        # Flatten the values. Augmented_indices should be unique mappings.
+        flattened_augmented_values = sorted(
+            {x for v in self.augmented_indices.values() for x in v}
+        )
 
         # Switch out elements found by augmentation with origin element
         for elem in query:
-            if elem in self.augmented_indices.values():
-                query[
-                    query == elem
-                ] = self.get_origin_augmented_index(elem)
+            if elem in flattened_augmented_values:
+                query[query == elem] = self.get_origin_augmented_index(elem)
 
         return query
 

@@ -1,16 +1,39 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import nlpaug.augmenter.word as naw
 
+from small_text import BreakingTies
+from augment import create_augmented_dataset
+from datasets import load_dataset
 from helpers import evaluate, create_active_learner, create_small_text_dataset
 from constants import Datasets
-from query_strategies import AugmentedEntropyQueryStrategy
+from query_strategies import (
+    AugmentedEntropyQueryStrategy,
+    AugmentedExtensionQueryStrategy,
+)
 
 # SETUP
-test, train, num_classes, augmented_indices = create_small_text_dataset(Datasets.ROTTEN.value)
+
+dataset = load_dataset(Datasets.ROTTEN.value)
+
+raw_test = dataset["test"]
+raw_train = dataset["train"]
+num_classes = raw_train.features["label"].num_classes
+augmented_train, augmented_indices = create_augmented_dataset(
+    raw_train, naw.SynonymAug(aug_src="wordnet"), n=2
+)
+
+test = create_small_text_dataset(raw_test)
+train = create_small_text_dataset(augmented_train)
+
 # HERE ONE COULD ADD ITS OWN QUERY_STRATEGY
 active_learner, indices_labeled = create_active_learner(
-    train, num_classes, AugmentedEntropyQueryStrategy
+    train,
+    num_classes,
+    AugmentedExtensionQueryStrategy(
+        base_strategy=BreakingTies(), augmented_indices=augmented_indices
+    ),
 )
 
 # USE INITIALIZED ACTIVE LEARNER AND GO INTO LOOP

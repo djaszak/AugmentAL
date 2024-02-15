@@ -13,6 +13,7 @@ from small_text import (
     QueryStrategy,
 )
 from constants import TransformerModels
+from augment import create_augmented_dataset
 
 
 # CONSTANTS
@@ -27,48 +28,30 @@ np.random.seed(SEED)
 
 
 def create_small_text_dataset(
-    datset_name: str,
+    dataset: datasets.Dataset,
 ) -> set[TransformersDataset, TransformersDataset, int]:
     """Get specified hf dataset and transform to small text train and test set
 
     Args:
-        datset_name (str): The name of as dataset found on hf
+        dataset (datasets.Dataset): An hf dataset partition.
 
     Returns:
         tuple[TransformersDataset, TransformersDataset, int]: A train and a test set and the num_labels
     """
-    raw_dataset = datasets.load_dataset(datset_name)
-    num_classes = raw_dataset["train"].features["label"].num_classes
-
     tokenizer = AutoTokenizer.from_pretrained(TransformerModels.BERT_TINY.value)
 
-    # HERE COMES THE CREATION OF AUGMENT_DICT
-    augmented_indices = {}
-    # TODO:
-    # augment_dict = {}
-    # raw_dataset.map(augment_method)
-    # here I need some mechanism, to save the augmentend_indices
-    # Check HF reference for .map()
+    num_classes = dataset.features["label"].num_classes
 
     # TRANSFORM INTO SMALL TEXT
     target_labels = np.arange(num_classes)
 
-    train = TransformersDataset.from_arrays(
-        raw_dataset["train"]["text"],
-        raw_dataset["train"]["label"],
+    return TransformersDataset.from_arrays(
+        dataset["text"],
+        dataset["label"],
         tokenizer,
         max_length=60,
         target_labels=target_labels,
     )
-    test = TransformersDataset.from_arrays(
-        raw_dataset["test"]["text"],
-        raw_dataset["test"]["label"],
-        tokenizer,
-        max_length=60,
-        target_labels=target_labels,
-    )
-
-    return (train, test, num_classes, augmented_indices)
 
 
 def warm_start_active_learner(active_learner, y_train):
@@ -101,7 +84,7 @@ def create_active_learner(
         kwargs=dict({"mini_batch_size": 32, "class_weight": "balanced"}),
     )
 
-    active_learner = PoolBasedActiveLearner(clf_factory, query_strategy(), train_set)
+    active_learner = PoolBasedActiveLearner(clf_factory, query_strategy, train_set)
     indices_labeled = warm_start_active_learner(active_learner, train_set.y)
 
     return active_learner, indices_labeled
