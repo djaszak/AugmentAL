@@ -9,7 +9,6 @@ from datasets import load_dataset
 from helpers import evaluate, create_active_learner, create_small_text_dataset
 from constants import Datasets
 from query_strategies import (
-    AugmentedEntropyQueryStrategy,
     AugmentedExtensionQueryStrategy,
 )
 
@@ -45,14 +44,15 @@ results.append(evaluate(active_learner, train[indices_labeled], test))
 
 for i in range(num_queries):
     # ...where each iteration consists of labelling 20 samples
+    # Using the AugmentedQueryStrategy will result in more than 20
+    # samples provided. This has to be handled by usage of
+    # augmented_indices when implementing a real life usage.
+    # At the end you should always have 20 original indices in this
+    # list. Just iterate over it, let the original sample be labeled
+    # and add the label that is gotten to the virtual samples, which
+    # are retrieved by augmented_indices.
     indices_queried = active_learner.query(num_samples=20)
-    print(f"indices_queried: {indices_queried}")
 
-    for index in indices_queried:
-        if index in augmented_indices:
-            indices_queried.append(augmented_indices[index])
-
-    # Simulate user interaction here. Replace this for real-world usage.
     y = train.y[indices_queried]
 
     # Return the labels for the current query to the active learner.

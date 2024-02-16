@@ -13,11 +13,14 @@ def create_augmented_dataset(
 ) -> set[datasets.Dataset, dict[int, list[int]]]:
     augmented_indices = {}
 
+    # Because we multiply create augmented sets
+    # based on one set and then concatenate the newly
+    # created virtual sets, the augmented_indices
+    # always follow this pattern.
     num_rows = dataset.num_rows
-    # TODO: This calculation is wrong 
     for x in range(num_rows):
         augmented_indices[int(x)] = [
-            int((x + num_rows) * (y + 1)) for y in range(n)
+            int(x + (num_rows * (y + 1))) for y in range(n)
         ]
 
     augmented_sets = [

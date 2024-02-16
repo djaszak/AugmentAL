@@ -162,3 +162,4 @@ cython_debug/
 # Custom
 .active_learning_lib_cache
 .vscode
+*_results.json
