@@ -163,3 +163,4 @@ cython_debug/
 .active_learning_lib_cache
 .vscode
 *_results.json
+.DS_store
