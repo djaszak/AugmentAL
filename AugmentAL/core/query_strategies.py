@@ -61,25 +61,44 @@ class AugmentedExtensionQueryStrategy(AugmentedQueryStrategyBase):
     def query(
         self, clf, dataset, indices_unlabeled, indices_labeled, y, n=10
     ) -> np.ndarray[int]:
+        original_queried_indices = []
         query = self.base_strategy.query(
             clf, dataset, indices_unlabeled, indices_labeled, y, n
         )
-        original_queried_indices = [
-            (
-                self.get_origin_augmented_index(elem)
-                if elem in self.flattened_augmented_values
-                else elem
+        while len(original_queried_indices) < n:
+            # We want to get n samples to be labeled to be
+            # comparable to other strategies, so we need to
+            # keep querying until we have n samples.
+            query = self.base_strategy.query(
+                clf,
+                dataset,
+                indices_unlabeled,
+                indices_labeled,
+                y,
+                n - len(original_queried_indices),
             )
-            for elem in query
-        ]
+            original_queried_indices.extend(
+                [
+                    (
+                        self.get_origin_augmented_index(elem)
+                        if elem in self.flattened_augmented_values
+                        else elem
+                    )
+                    for elem in query
+                ]
+            )
+            original_queried_indices = list(dict.fromkeys(original_queried_indices))
+        original_queried_indices = original_queried_indices[:n]
+
         augmented_indices_queried = [
             x
             for xs in [self.augmented_indices[x] for x in original_queried_indices]
             for x in xs
         ]
-        return np.unique(np.array(original_queried_indices + augmented_indices_queried))
+        return np.concatenate((original_queried_indices, augmented_indices_queried))
 
 
+# AugmentedLeastConfidenceQueryStrategy
 class AugmentedEntropyQueryStrategy(
     AugmentedQueryStrategyBase, ConfidenceBasedQueryStrategy
 ):
@@ -101,9 +120,6 @@ class AugmentedEntropyQueryStrategy(
                 proba[x] = proba[i]
 
         return proba
-
-    def _calculate_entropy(self, proba):
-        return
 
     def __str__(self):
         return "AugmentedEntropyQueryStrategy"
