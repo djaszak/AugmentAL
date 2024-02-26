@@ -1,5 +1,6 @@
 import nlpaug.augmenter.word as naw
 import numpy as np
+import time
 from scipy.stats import entropy
 from small_text.query_strategies import (
     ConfidenceBasedQueryStrategy,
@@ -65,6 +66,7 @@ class AugmentedExtensionQueryStrategy(AugmentedQueryStrategyBase):
         query = self.base_strategy.query(
             clf, dataset, indices_unlabeled, indices_labeled, y, n
         )
+        t0 = time.perf_counter()
         while len(original_queried_indices) < n:
             # We want to get n samples to be labeled to be
             # comparable to other strategies, so we need to
@@ -88,6 +90,9 @@ class AugmentedExtensionQueryStrategy(AugmentedQueryStrategyBase):
                 ]
             )
             original_queried_indices = list(dict.fromkeys(original_queried_indices))
+            print(f"Queried {len(original_queried_indices)} samples")
+        t1 = time.perf_counter()
+        print(f"While loop took {t1 - t0} seconds")
         original_queried_indices = original_queried_indices[:n]
 
         augmented_indices_queried = [

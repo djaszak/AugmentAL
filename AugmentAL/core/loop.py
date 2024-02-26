@@ -15,39 +15,36 @@ from query_strategies import (
 
 # SETUP
 
-num_queries = 5
+num_queries = 20
 num_samples = 20
-num_augmentations = 2
+num_augmentations = 5
 
 dataset = load_dataset(Datasets.ROTTEN.value)
 
 raw_test = dataset["test"]
 raw_train = dataset["train"]
 num_classes = raw_train.features["label"].num_classes
-# raw_augmented_train, augmented_indices = create_augmented_dataset(
-#     raw_train, naw.SynonymAug(aug_src="wordnet"), n=num_augmentations
-# )
+raw_augmented_train, augmented_indices = create_augmented_dataset(
+    raw_train, naw.SynonymAug(aug_src="wordnet"), n=num_augmentations
+)
 
 test = create_small_text_dataset(raw_test)
-# train = create_small_text_dataset(raw_augmented_train)
-train = create_small_text_dataset(raw_train)
+train = create_small_text_dataset(raw_augmented_train)
+# train = create_small_text_dataset(raw_train)
 
 # HERE ONE COULD ADD ITS OWN QUERY_STRATEGY
 active_learner, indices_labeled = create_active_learner(
     train_set=train,
-    # train_set=train,
     num_classes=num_classes,
-    query_strategy=BreakingTies(),
-    # query_strategy=AugmentedExtensionQueryStrategy(
-    #     base_strategy=BreakingTies(), augmented_indices=augmented_indices
-    # ),
+    # query_strategy=BreakingTies(),
+    query_strategy=AugmentedExtensionQueryStrategy(
+        base_strategy=BreakingTies(), augmented_indices=augmented_indices
+    ),
     # query_strategy=AugmentedExtensionQueryStrategy(base_strategy=AugmentedEntropyQueryStrategy(), augmented_indices=augmented_indices),
     # query_strategy=AugmentedEntropyQueryStrategy(augmented_indices=augmented_indices),
 )
 
 # USE INITIALIZED ACTIVE LEARNER AND GO INTO LOOP
-
-
 results = []
 results.append(evaluate(active_learner, train[indices_labeled], test))
 
