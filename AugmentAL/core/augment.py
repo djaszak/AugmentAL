@@ -18,17 +18,15 @@ def create_augmented_dataset(
     # always follow this pattern.
     num_rows = dataset.num_rows
     for x in range(num_rows):
-        augmented_indices[int(x)] = [
-            int(x + (num_rows * (y + 1))) for y in range(n)
-        ]
+        augmented_indices[int(x)] = [int(x + (num_rows * (y + 1))) for y in range(n)]
 
     augmented_sets = [
-            dataset.map(
-                lambda row: {feature: augmenter.augment(row[feature])[0]},
-                # num_proc=multiprocessing.cpu_count(),
-            )
-            for _ in range(n)
-        ]
+        dataset.map(
+            lambda row: {feature: augmenter.augment(row[feature])[0]},
+            # num_proc=multiprocessing.cpu_count(),
+        )
+        for _ in range(n)
+    ]
     augmented_sets.insert(0, dataset)
 
     return concatenate_datasets(augmented_sets), augmented_indices

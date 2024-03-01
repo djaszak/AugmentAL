@@ -1,7 +1,4 @@
-import nlpaug.augmenter.word as naw
 import numpy as np
-import time
-import copy
 from scipy.stats import entropy
 from small_text.query_strategies import (
     ConfidenceBasedQueryStrategy,
@@ -68,9 +65,9 @@ class AugmentedExtensionQueryStrategy(AugmentedQueryStrategyBase):
         already_queried = np.array([], dtype=int)
 
         while len(original_indices_queried) < n:
-            # Two steps: 
+            # Two steps:
             # 1. Query the base_strategy indices_unlabeled should
-            # be trimmed of indices that we either queried already in the 
+            # be trimmed of indices that we either queried already in the
             # while loop or that we queried in the past.
             # 2. Add the indices that we queried to the already_queried list
             # get original indices, if we get augemented ones in base and
@@ -95,27 +92,32 @@ class AugmentedExtensionQueryStrategy(AugmentedQueryStrategyBase):
             already_queried = np.unique(np.concatenate((already_queried, query)))
             original_indices_queried = np.unique(
                 np.concatenate(
-                    (original_indices_queried,
-                    [
-                        (
-                            int(self.get_origin_augmented_index(elem))
-                            if elem in self.flattened_augmented_values
-                            else int(elem)
-                        )
-                        for elem in query
-                    ]),
+                    (
+                        original_indices_queried,
+                        [
+                            (
+                                int(self.get_origin_augmented_index(elem))
+                                if elem in self.flattened_augmented_values
+                                else int(elem)
+                            )
+                            for elem in query
+                        ],
+                    ),
                 )
             )
-            augmented_indices_queried = np.unique( 
+            augmented_indices_queried = np.unique(
                 np.concatenate(
-                    (augmented_indices_queried,
-                    [
-                        int(x)
-                        for xs in [
-                            self.augmented_indices[x] for x in original_indices_queried
-                        ]
-                        for x in xs
-                    ]),
+                    (
+                        augmented_indices_queried,
+                        [
+                            int(x)
+                            for xs in [
+                                self.augmented_indices[x]
+                                for x in original_indices_queried
+                            ]
+                            for x in xs
+                        ],
+                    ),
                 )
             )
 
