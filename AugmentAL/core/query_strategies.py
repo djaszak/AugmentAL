@@ -1,6 +1,7 @@
 import nlpaug.augmenter.word as naw
 import numpy as np
 import time
+import copy
 from scipy.stats import entropy
 from small_text.query_strategies import (
     ConfidenceBasedQueryStrategy,
@@ -31,7 +32,7 @@ class AugmentedQueryStrategyBase(QueryStrategy):
             {x for v in self.augmented_indices.values() for x in v}
         )
 
-    def get_origin_augmented_index(self, aug_elem_index):
+    def get_origin_augmented_index(self, aug_elem_index) -> int:
         # TODO: More robust by introducing try except for index error
         return [
             key
@@ -59,48 +60,67 @@ class AugmentedExtensionQueryStrategy(AugmentedQueryStrategyBase):
         super().__init__(augmented_indices)
         self.base_strategy = base_strategy
 
-    def query(
-        self, clf, dataset, indices_unlabeled, indices_labeled, y, n=10
-    ) -> np.ndarray[int]:
-        original_queried_indices = []
-        query = self.base_strategy.query(
-            clf, dataset, indices_unlabeled, indices_labeled, y, n
-        )
-        t0 = time.perf_counter()
-        while len(original_queried_indices) < n:
-            # We want to get n samples to be labeled to be
-            # comparable to other strategies, so we need to
-            # keep querying until we have n samples.
+    def query(self, clf, dataset, indices_unlabeled, indices_labeled, y, n=10):
+        # Firstly we need three lists to keep track of the indices
+        # that we do not want to query again in while loop.
+        original_indices_queried = np.array([], dtype=int)
+        augmented_indices_queried = np.array([], dtype=int)
+        already_queried = np.array([], dtype=int)
+
+        while len(original_indices_queried) < n:
+            # Two steps: 
+            # 1. Query the base_strategy indices_unlabeled should
+            # be trimmed of indices that we either queried already in the 
+            # while loop or that we queried in the past.
+            # 2. Add the indices that we queried to the already_queried list
+            # get original indices, if we get augemented ones in base and
+            # at the end get all augmented from the base ones. This
+            # ensures that we can "trow away" the augmented ones after
+            # the while loop if we want to.
             query = self.base_strategy.query(
                 clf,
                 dataset,
-                indices_unlabeled,
+                np.setdiff1d(
+                    np.setdiff1d(
+                        np.setdiff1d(indices_unlabeled, already_queried),
+                        augmented_indices_queried,
+                    ),
+                    original_indices_queried,
+                ),
                 indices_labeled,
                 y,
-                n - len(original_queried_indices),
+                n - len(original_indices_queried),
             )
-            original_queried_indices.extend(
-                [
-                    (
-                        self.get_origin_augmented_index(elem)
-                        if elem in self.flattened_augmented_values
-                        else elem
-                    )
-                    for elem in query
-                ]
-            )
-            original_queried_indices = list(dict.fromkeys(original_queried_indices))
-            print(f"Queried {len(original_queried_indices)} samples")
-        t1 = time.perf_counter()
-        print(f"While loop took {t1 - t0} seconds")
-        original_queried_indices = original_queried_indices[:n]
 
-        augmented_indices_queried = [
-            x
-            for xs in [self.augmented_indices[x] for x in original_queried_indices]
-            for x in xs
-        ]
-        return np.concatenate((original_queried_indices, augmented_indices_queried))
+            already_queried = np.unique(np.concatenate((already_queried, query)))
+            original_indices_queried = np.unique(
+                np.concatenate(
+                    (original_indices_queried,
+                    [
+                        (
+                            int(self.get_origin_augmented_index(elem))
+                            if elem in self.flattened_augmented_values
+                            else int(elem)
+                        )
+                        for elem in query
+                    ]),
+                )
+            )
+            augmented_indices_queried = np.unique( 
+                np.concatenate(
+                    (augmented_indices_queried,
+                    [
+                        int(x)
+                        for xs in [
+                            self.augmented_indices[x] for x in original_indices_queried
+                        ]
+                        for x in xs
+                    ]),
+                )
+            )
+
+        original_indices_queried = original_indices_queried[:n]
+        return np.concatenate((original_indices_queried, augmented_indices_queried))
 
 
 # AugmentedLeastConfidenceQueryStrategy
