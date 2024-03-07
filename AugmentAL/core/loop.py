@@ -6,7 +6,7 @@ import nlpaug.augmenter.word as naw
 from small_text import BreakingTies
 from augment import create_augmented_dataset
 from datasets import load_dataset
-from helpers import evaluate, create_active_learner, create_small_text_dataset
+from AugmentAL.core.core import evaluate, create_active_learner, create_small_text_dataset
 from constants import Datasets
 from query_strategies import (
     AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy,

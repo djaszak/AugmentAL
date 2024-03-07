@@ -6,7 +6,7 @@ from small_text.query_strategies import (
     QueryStrategy,
 )
 
-from helpers import fill_query_with_augmented_search_room
+from AugmentAL.core.core import fill_query_with_augmented_search_room
 
 
 class AugmentedQueryStrategyBase(QueryStrategy):
