@@ -11,6 +11,7 @@ from small_text import (
     TransformerModelArguments,
     random_initialization_balanced,
     QueryStrategy,
+    Classifier,
 )
 from constants import TransformerModels
 from augment import create_augmented_dataset
@@ -54,9 +55,14 @@ def create_small_text_dataset(
     )
 
 
-def warm_start_active_learner(active_learner, y_train):
+def warm_start_active_learner(
+    active_learner, y_train, training_indices: np.ndarray = None
+):
     """Warm start the sample pool"""
 
+    training_indices = (
+        y_train[training_indices] if training_indices is not None else y_train
+    )
     indices_initial = random_initialization_balanced(y_train, n_samples=20)
     active_learner.initialize_data(indices_initial, y_train[indices_initial])
 
@@ -67,6 +73,7 @@ def create_active_learner(
     train_set: TransformersDataset,
     num_classes: int,
     query_strategy: QueryStrategy = PredictionEntropy,
+    training_indices: np.ndarray = None,
 ) -> set[PoolBasedActiveLearner, int]:
     """Load transformer, build clf_factory based on it and return a PoolBasedActiveLearner.
 
@@ -85,7 +92,9 @@ def create_active_learner(
     )
 
     active_learner = PoolBasedActiveLearner(clf_factory, query_strategy, train_set)
-    indices_labeled = warm_start_active_learner(active_learner, train_set.y)
+    indices_labeled = warm_start_active_learner(
+        active_learner, train_set.y, training_indices
+    )
 
     return active_learner, indices_labeled
 
@@ -100,3 +109,77 @@ def evaluate(active_learner, train, test):
     print("Test accuracy: {:.2f}".format(test_acc))
 
     return test_acc
+
+
+def fill_query_with_augmented_search_room(
+    query_strategy: QueryStrategy,
+    clf: Classifier,
+    dataset: TransformersDataset,
+    indices_unlabeled: np.ndarray,
+    indices_labeled: np.ndarray,
+    y: np.ndarray,
+    n: int,
+) -> set[np.ndarray, np.ndarray]:
+    # Firstly we need three lists to keep track of the indices
+    # that we do not want to query again in while loop.
+    original_indices_queried = np.array([], dtype=int)
+    augmented_indices_queried = np.array([], dtype=int)
+    already_queried = np.array([], dtype=int)
+    while len(original_indices_queried) < n:
+        # Two steps:
+        # 1. Query the base_strategy indices_unlabeled should
+        # be trimmed of indices that we either queried already in the
+        # while loop or that we queried in the past.
+        # 2. Add the indices that we queried to the already_queried list
+        # get original indices, if we get augemented ones in base and
+        # at the end get all augmented from the base ones. This
+        # ensures that we can "trow away" the augmented ones after
+        # the while loop if we want to.
+        query = query_strategy.base_strategy.query(
+            clf,
+            dataset,
+            np.setdiff1d(
+                np.setdiff1d(
+                    np.setdiff1d(indices_unlabeled, already_queried),
+                    augmented_indices_queried,
+                ),
+                original_indices_queried,
+            ),
+            indices_labeled,
+            y,
+            n - len(original_indices_queried),
+        )
+
+        already_queried = np.unique(np.concatenate((already_queried, query)))
+        original_indices_queried = np.unique(
+            np.concatenate(
+                (
+                    original_indices_queried,
+                    [
+                        (
+                            int(query_strategy.get_origin_augmented_index(elem))
+                            if elem in query_strategy.flattened_augmented_values
+                            else int(elem)
+                        )
+                        for elem in query
+                    ],
+                ),
+            )
+        )
+        augmented_indices_queried = np.unique(
+            np.concatenate(
+                (
+                    augmented_indices_queried,
+                    [
+                        int(x)
+                        for xs in [
+                            query_strategy.augmented_indices[x]
+                            for x in original_indices_queried
+                        ]
+                        for x in xs
+                    ],
+                ),
+            )
+        )
+    original_indices_queried = original_indices_queried[:n]
+    return original_indices_queried, augmented_indices_queried

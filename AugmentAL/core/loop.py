@@ -9,15 +9,17 @@ from datasets import load_dataset
 from helpers import evaluate, create_active_learner, create_small_text_dataset
 from constants import Datasets
 from query_strategies import (
-    AugmentedExtensionQueryStrategy,
-    AugmentedEntropyQueryStrategy,
+    AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy,
+    AugmentedSearchSpaceExtensionQueryStrategy,
+    AugmentedLeastConfidenceQueryStrategy,
+    AugmentedOutcomesQueryStrategy,
 )
 
 # SETUP
 
-num_queries = 20
+num_queries = 5
 num_samples = 20
-num_augmentations = 5
+num_augmentations = 2
 
 dataset = load_dataset(Datasets.ROTTEN.value)
 
@@ -30,16 +32,22 @@ raw_augmented_train, augmented_indices = create_augmented_dataset(
 
 test = create_small_text_dataset(raw_test)
 train = create_small_text_dataset(raw_augmented_train)
+base_train = create_small_text_dataset(raw_train)
 # train = create_small_text_dataset(raw_train)
 
 # HERE ONE COULD ADD ITS OWN QUERY_STRATEGY
+# TODO: adjust warm starting so that no augmented samples are used
 active_learner, indices_labeled = create_active_learner(
     train_set=train,
     num_classes=num_classes,
     # query_strategy=BreakingTies(),
-    query_strategy=AugmentedExtensionQueryStrategy(
+    query_strategy=AugmentedSearchSpaceExtensionQueryStrategy(
         base_strategy=BreakingTies(), augmented_indices=augmented_indices
     ),
+    # query_strategy=AugmentedOutcomesQueryStrategy(
+    #     base_strategy=BreakingTies(), augmented_indices=augmented_indices,
+    #     base_dataset=base_train, base_indices_unlabeled=base_train, base_indices_labeled=base_train
+    # ),
     # query_strategy=AugmentedExtensionQueryStrategy(base_strategy=AugmentedEntropyQueryStrategy(), augmented_indices=augmented_indices),
     # query_strategy=AugmentedEntropyQueryStrategy(augmented_indices=augmented_indices),
 )
