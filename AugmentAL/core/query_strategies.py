@@ -1,12 +1,8 @@
 import numpy as np
-from scipy.stats import entropy
 from small_text.query_strategies import (
     ConfidenceBasedQueryStrategy,
-    BreakingTies,
     QueryStrategy,
 )
-
-from AugmentAL.core.core import fill_query_with_augmented_search_room
 
 
 class AugmentedQueryStrategyBase(QueryStrategy):

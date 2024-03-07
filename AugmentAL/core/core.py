@@ -13,8 +13,7 @@ from small_text import (
     QueryStrategy,
     Classifier,
 )
-from constants import TransformerModels
-from augment import create_augmented_dataset
+from core.constants import TransformerModels
 
 
 # CONSTANTS
