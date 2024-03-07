@@ -49,10 +49,16 @@ def run_active_learning_loop(
         "AugmentedSearchSpaceExtensionQueryStrategy": AugmentedSearchSpaceExtensionQueryStrategy(
             base_strategy=base_strategy, augmented_indices=augmented_indices
         ),
-        "AugmentedLeastConfidenceQueryStrategy": AugmentedLeastConfidenceQueryStrategy(
-            augmented_indices=augmented_indices
-        ),
         "AugmentedOutcomesQueryStrategy": AugmentedOutcomesQueryStrategy(
+            base_strategy=base_strategy, augmented_indices=augmented_indices
+        ),
+        "AugmentedSearchSpaceExtensionAndOutcomeLeastConfidenceQueryStrategy": AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
+            base_strategy=base_strategy, augmented_indices=augmented_indices
+        ),
+        "AugmentedSearchSpaceExtensionLeastConfidenceQueryStrategy": AugmentedSearchSpaceExtensionQueryStrategy(
+            base_strategy=base_strategy, augmented_indices=augmented_indices
+        ),
+        "AugmentedOutcomesLeastConfidenceQueryStrategy": AugmentedOutcomesQueryStrategy(
             base_strategy=base_strategy, augmented_indices=augmented_indices
         ),
     }
@@ -97,6 +103,12 @@ def run_active_learning_loop(
         print("---------------")
         print(f"Iteration #{i} ({len(indices_labeled)} samples)")
         results.append(evaluate(active_learner, train[indices_labeled], test))
+
+        # Write indices_queried to a txt file after every third iteration
+        if (i + 1) % 3 == 0:
+            txt_filename = f"{query_strategy}_{base_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}_iteration_{i+1}.txt"
+            with open((Path(__file__).parent / '../results' / txt_filename).resolve(), "w") as f:
+                f.write("\n".join(map(str, indices_queried)))
 
     iterations = np.arange(num_queries + 1)
     accuracies = np.array(results)
