@@ -22,7 +22,12 @@ from small_text import BreakingTies, QueryStrategy
 SEED = 2022
 np.random.seed(SEED)
 
+
 def run_active_learning_loop(
+    raw_test,
+    raw_train,
+    raw_augmented_train,
+    augmented_indices,
     num_queries: int = 5,
     num_samples: int = 20,
     num_augmentations: int = 2,
@@ -30,16 +35,12 @@ def run_active_learning_loop(
     query_strategy: str
     | QueryStrategy = "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
 ):
-    dataset = load_dataset(Datasets.ROTTEN.value)
-
-    raw_test = dataset["test"]
-    raw_train = dataset["train"]
     num_classes = raw_train.features["label"].num_classes
-    raw_augmented_train, augmented_indices = create_augmented_dataset(
-        raw_train, naw.SynonymAug(aug_src="wordnet"), n=num_augmentations
-    )
 
     base_strategy = BreakingTies()
+    augmented_least_confidence_strategy = AugmentedLeastConfidenceQueryStrategy(
+        augmented_indices=augmented_indices
+    )
     # Here we could add more custom configurations for the query strategies
     query_strategies: dict[str, QueryStrategy] = {
         "BreakingTies": BreakingTies(),
@@ -53,13 +54,14 @@ def run_active_learning_loop(
             base_strategy=base_strategy, augmented_indices=augmented_indices
         ),
         "AugmentedSearchSpaceExtensionAndOutcomeLeastConfidenceQueryStrategy": AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
-            base_strategy=base_strategy, augmented_indices=augmented_indices
+            base_strategy=augmented_least_confidence_strategy, augmented_indices=augmented_indices
         ),
         "AugmentedSearchSpaceExtensionLeastConfidenceQueryStrategy": AugmentedSearchSpaceExtensionQueryStrategy(
-            base_strategy=base_strategy, augmented_indices=augmented_indices
+            base_strategy=augmented_least_confidence_strategy, augmented_indices=augmented_indices
         ),
         "AugmentedOutcomesLeastConfidenceQueryStrategy": AugmentedOutcomesQueryStrategy(
-            base_strategy=base_strategy, augmented_indices=augmented_indices
+            base_strategy=augmented_least_confidence_strategy,
+            augmented_indices=augmented_indices,
         ),
     }
 
@@ -91,6 +93,7 @@ def run_active_learning_loop(
         # list. Just iterate over it, let the original sample be labeled
         # and add the label that is gotten to the virtual samples, which
         # are retrieved by augmented_indices.
+        txt_filename = f"{query_strategy}_{base_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.txt"
         indices_queried = active_learner.query(num_samples=num_samples)
 
         y = train.y[indices_queried]
@@ -106,9 +109,10 @@ def run_active_learning_loop(
 
         # Write indices_queried to a txt file after every third iteration
         if (i + 1) % 3 == 0:
-            txt_filename = f"{query_strategy}_{base_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}_iteration_{i+1}.txt"
-            with open((Path(__file__).parent / '../results' / txt_filename).resolve(), "w") as f:
-                f.write("\n".join(map(str, indices_queried)))
+            with open(
+                (Path(__file__).parent / "../results" / txt_filename).resolve(), "a"
+            ) as f:
+                f.write(", ".join(map(str, indices_queried)) + "\n")
 
     iterations = np.arange(num_queries + 1)
     accuracies = np.array(results)
@@ -118,6 +122,6 @@ def run_active_learning_loop(
     d_frame = pd.DataFrame(d)
 
     saving_name = f"{query_strategy}_{base_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.json"
-    
-    with open((Path(__file__).parent / '../results' / saving_name).resolve(), "w") as f:
+
+    with open((Path(__file__).parent / "../results" / saving_name).resolve(), "w") as f:
         f.write(d_frame.to_json())

@@ -1,4 +1,5 @@
 import numpy as np
+from datetime import datetime
 from small_text.query_strategies import (
     ConfidenceBasedQueryStrategy,
     QueryStrategy,
@@ -34,6 +35,85 @@ class AugmentedQueryStrategyBase(QueryStrategy):
             for key in self.augmented_indices
             if (aug_elem_index in self.augmented_indices[key])
         ][0]
+
+    def while_loop_filling_up_indices(
+        self,
+        n: int,
+        clf,
+        dataset,
+        indices_unlabeled,
+        indices_labeled,
+        y,
+    ) -> np.ndarray:
+        original_indices_queried: np.ndarray = np.array([], dtype=int)
+        augmented_indices_queried: np.ndarray = np.array([], dtype=int)
+        indices_already_queried: np.ndarray = np.array([], dtype=int)
+
+        print(f"Start while at time: {(datetime.now()).strftime('%H:%M:%S')}")
+        while len(original_indices_queried) < n:
+            query = self.base_strategy.query(
+                clf,
+                dataset,
+                np.setdiff1d(
+                    np.setdiff1d(
+                        np.setdiff1d(
+                            indices_unlabeled,
+                            indices_already_queried,
+                        ),
+                        augmented_indices_queried,
+                    ),
+                    original_indices_queried,
+                ),
+                indices_labeled,
+                y,
+                n - len(original_indices_queried),
+            )
+            indices_already_queried = np.concatenate((indices_already_queried, query))
+
+            # After the query here will be empty_array with the indices of the
+            # original_elements that are queried and calculated,
+            # if the element in the query is an augmented element.
+            original_indices_queried = np.setdiff1d(
+                np.unique(
+                    np.concatenate(
+                        (
+                            original_indices_queried,
+                            [
+                                (
+                                    int(self.get_origin_augmented_index(elem))
+                                    if elem in self.flattened_augmented_values
+                                    else int(elem)
+                                )
+                                for elem in query
+                            ],
+                        ),
+                    )
+                ),
+                indices_labeled,
+            )
+            # After getting the original indices, we use this indices, to calculate
+            # all of the augmented indices that are related to the original indices.
+            augmented_indices_queried = np.setdiff1d(
+                np.unique(
+                    np.concatenate(
+                        (
+                            augmented_indices_queried,
+                            [
+                                int(x)
+                                for xs in [
+                                    self.augmented_indices[x]
+                                    for x in original_indices_queried
+                                ]
+                                for x in xs
+                            ],
+                        ),
+                    )
+                ),
+                indices_labeled,
+            )
+        print(f"End while at time: {(datetime.now()).strftime('%H:%M:%S')}")
+        original_indices_queried = original_indices_queried[:n]
+        return original_indices_queried, augmented_indices_queried
 
 
 class AugmentedOutcomesQueryStrategy(AugmentedQueryStrategyBase):
@@ -111,70 +191,12 @@ class AugmentedSearchSpaceExtensionQueryStrategy(AugmentedQueryStrategyBase):
         self.base_strategy = base_strategy
 
     def query(self, clf, dataset, indices_unlabeled, indices_labeled, y, n=10):
-                # Firstly we need three lists to keep track of the indices
-        # that we do not want to query again in while loop.
-        original_indices_queried = np.array([], dtype=int)
-        augmented_indices_queried = np.array([], dtype=int)
-        already_queried = np.array([], dtype=int)
-
-        while len(original_indices_queried) < n:
-            # Two steps:
-            # 1. Query the base_strategy indices_unlabeled should
-            # be trimmed of indices that we either queried already in the
-            # while loop or that we queried in the past.
-            # 2. Add the indices that we queried to the already_queried list
-            # get original indices, if we get augemented ones in base and
-            # at the end get all augmented from the base ones. This
-            # ensures that we can "trow away" the augmented ones after
-            # the while loop if we want to.
-            query = self.base_strategy.query(
-                clf,
-                dataset,
-                np.setdiff1d(
-                    np.setdiff1d(
-                        np.setdiff1d(indices_unlabeled, already_queried),
-                        augmented_indices_queried,
-                    ),
-                    original_indices_queried,
-                ),
-                indices_labeled,
-                y,
-                n - len(original_indices_queried),
-            )
-
-            already_queried = np.unique(np.concatenate((already_queried, query)))
-            original_indices_queried = np.unique(
-                np.concatenate(
-                    (
-                        original_indices_queried,
-                        [
-                            (
-                                int(self.get_origin_augmented_index(elem))
-                                if elem in self.flattened_augmented_values
-                                else int(elem)
-                            )
-                            for elem in query
-                        ],
-                    ),
-                )
-            )
-            augmented_indices_queried = np.unique(
-                np.concatenate(
-                    (
-                        augmented_indices_queried,
-                        [
-                            int(x)
-                            for xs in [
-                                self.augmented_indices[x]
-                                for x in original_indices_queried
-                            ]
-                            for x in xs
-                        ],
-                    ),
-                )
-            )
-
-        original_indices_queried = original_indices_queried[:n]
+        (
+            original_indices_queried,
+            augmented_indices_queried,
+        ) = self.while_loop_filling_up_indices(
+            n, clf, dataset, indices_unlabeled, indices_labeled, y
+        )
         return original_indices_queried
 
 
@@ -200,70 +222,12 @@ class AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(AugmentedQueryStrateg
         self.base_strategy = base_strategy
 
     def query(self, clf, dataset, indices_unlabeled, indices_labeled, y, n=10):
-                # Firstly we need three lists to keep track of the indices
-        # that we do not want to query again in while loop.
-        original_indices_queried = np.array([], dtype=int)
-        augmented_indices_queried = np.array([], dtype=int)
-        already_queried = np.array([], dtype=int)
-
-        while len(original_indices_queried) < n:
-            # Two steps:
-            # 1. Query the base_strategy indices_unlabeled should
-            # be trimmed of indices that we either queried already in the
-            # while loop or that we queried in the past.
-            # 2. Add the indices that we queried to the already_queried list
-            # get original indices, if we get augemented ones in base and
-            # at the end get all augmented from the base ones. This
-            # ensures that we can "trow away" the augmented ones after
-            # the while loop if we want to.
-            query = self.base_strategy.query(
-                clf,
-                dataset,
-                np.setdiff1d(
-                    np.setdiff1d(
-                        np.setdiff1d(indices_unlabeled, already_queried),
-                        augmented_indices_queried,
-                    ),
-                    original_indices_queried,
-                ),
-                indices_labeled,
-                y,
-                n - len(original_indices_queried),
-            )
-
-            already_queried = np.unique(np.concatenate((already_queried, query)))
-            original_indices_queried = np.unique(
-                np.concatenate(
-                    (
-                        original_indices_queried,
-                        [
-                            (
-                                int(self.get_origin_augmented_index(elem))
-                                if elem in self.flattened_augmented_values
-                                else int(elem)
-                            )
-                            for elem in query
-                        ],
-                    ),
-                )
-            )
-            augmented_indices_queried = np.unique(
-                np.concatenate(
-                    (
-                        augmented_indices_queried,
-                        [
-                            int(x)
-                            for xs in [
-                                self.augmented_indices[x]
-                                for x in original_indices_queried
-                            ]
-                            for x in xs
-                        ],
-                    ),
-                )
-            )
-
-        original_indices_queried = original_indices_queried[:n]
+        (
+            original_indices_queried,
+            augmented_indices_queried,
+        ) = self.while_loop_filling_up_indices(
+            n, clf, dataset, indices_unlabeled, indices_labeled, y
+        )
         return np.concatenate((original_indices_queried, augmented_indices_queried))
 
 
@@ -274,18 +238,28 @@ class AugmentedLeastConfidenceQueryStrategy(
     a sample and its augmented samples is the lowest.
     """
 
+    def query(self, clf, dataset, indices_unlabeled, indices_labeled, y, n=10):
+        return super().query(clf, dataset, indices_unlabeled, indices_labeled, y, n)
+
     def get_confidence(self, clf, dataset, indices_unlabeled, indices_labeled, y):
         # Use the best confidence from the classifier
         proba = clf.predict_proba(dataset).max(axis=1)
 
+        try:
+            augmented_indices_probas = [proba[x] for x in self.augmented_indices[i]]
+        except IndexError:
+            raise IndexError(
+                "The augmented_indices dictionary is not consistent with the dataset."
+            )
+
         for i in self.augmented_indices:
             proba[i] = np.mean(
                 np.concatenate(
-                    ([proba[i]], [proba[x] for x in self.augmented_indices[i]])
+                    ([proba[i]], augmented_indices_probas)
                 )
             )
-            for x in self.augmented_indices[i]:
-                proba[x] = proba[i]
+            for x in self.flattened_augmented_values:
+                proba[x] = 0
 
         return proba
 
