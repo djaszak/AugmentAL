@@ -16,7 +16,7 @@ from core.query_strategies import (
     AugmentedSearchSpaceExtensionQueryStrategy,
 )
 from datasets import load_dataset
-from small_text import BreakingTies, QueryStrategy
+from small_text import BreakingTies, QueryStrategy, KappaAverage
 
 # CONSTANTS
 SEED = 2022
@@ -36,6 +36,7 @@ def run_active_learning_loop(
     | QueryStrategy = "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
 ):
     num_classes = raw_train.features["label"].num_classes
+    stopping_criterion = KappaAverage(num_classes, kappa=0.8)
 
     base_strategy = BreakingTies()
     augmented_least_confidence_strategy = AugmentedLeastConfidenceQueryStrategy(
@@ -80,9 +81,11 @@ def run_active_learning_loop(
         query_strategy=chosen_strategy,
     )
 
-    # USE INITIALIZED ACTIVE LEARNER AND GO INTO LOOP
     results = []
+    stopping_history = []
+    
     results.append(evaluate(active_learner, train[indices_labeled], test))
+    stopping_history.append(stopping_criterion.stop(predictions=active_learner.classifier.predict(train)))
 
     for i in range(num_queries):
         # ...where each iteration consists of labelling 20 samples
@@ -106,6 +109,10 @@ def run_active_learning_loop(
         print("---------------")
         print(f"Iteration #{i} ({len(indices_labeled)} samples)")
         results.append(evaluate(active_learner, train[indices_labeled], test))
+
+        stopping_criterion_response = stopping_criterion.stop(predictions=active_learner.classifier.predict(train))
+        print(f'Stop: {stopping_criterion_response}')
+        stopping_history.append(stopping_criterion_response)
 
         # Write indices_queried to a txt file after every third iteration
         if (i + 1) % 3 == 0:

@@ -1,0 +1,7 @@
+datasets
+numpy
+matplotlib
+scikit-learn
+small-text[transformers]
+transformers
+nlpaug

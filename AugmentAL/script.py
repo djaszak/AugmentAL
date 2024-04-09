@@ -5,22 +5,22 @@ from nlpaug.augmenter import word as naw
 from core.augment import create_augmented_dataset
 from enum import Enum
 
-# run_active_learning_loop(
-#     num_queries=3,
-#     num_samples=20,
-#     num_augmentations=1,
-#     dataset=Datasets.ROTTEN,
-#     query_strategy="AugmentedSearchSpaceExtensionQueryStrategy",
-# )
+run_active_learning_loop(
+    num_queries=3,
+    num_samples=20,
+    num_augmentations=1,
+    dataset=Datasets.ROTTEN,
+    query_strategy="AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
+)
 
 query_strategies = [
-    # "BreakingTies",
+    "BreakingTies",
     # "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
     # "AugmentedSearchSpaceExtensionQueryStrategy",
     # "AugmentedOutcomesQueryStrategy",
     # "AugmentedSearchSpaceExtensionAndOutcomeLeastConfidenceQueryStrategy",
     # "AugmentedSearchSpaceExtensionLeastConfidenceQueryStrategy",
-    "AugmentedOutcomesLeastConfidenceQueryStrategy",
+    # "AugmentedOutcomesLeastConfidenceQueryStrategy",
 ]
 
 num_queries = 20

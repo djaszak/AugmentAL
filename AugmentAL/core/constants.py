@@ -5,6 +5,7 @@ from enum import Enum
 
 class TransformerModels(Enum):
     BERT_TINY = "prajjwal1/bert-tiny"
+    BERT = "google-bert/bert-base-uncased"
 
 
 class Datasets(Enum):
