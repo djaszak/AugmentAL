@@ -11,9 +11,9 @@ from core.query_strategies import (
     AugmentedOutcomesQueryStrategy,
     AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy,
     AugmentedSearchSpaceExtensionQueryStrategy,
-    AugmentedLeastConfidenceQueryStrategy,
+    AverageAcrossAugmentedQueryStrategy,
 )
-from small_text import BreakingTies, QueryStrategy, KappaAverage
+from small_text import BreakingTies, QueryStrategy, KappaAverage, RandomSampling
 
 # CONSTANTS
 SEED = 2022
@@ -37,31 +37,25 @@ def run_active_learning_loop(
     stopping_criterion = KappaAverage(num_classes, kappa=0.8)
 
     base_strategy = BreakingTies()
-    augmented_least_confidence_strategy = AugmentedLeastConfidenceQueryStrategy(
-        augmented_indices=augmented_indices
+    average_across_augmented_strategy = AverageAcrossAugmentedQueryStrategy(
+        base_strategy=base_strategy, augmented_indices=augmented_indices
     )
     # Here we could add more custom configurations for the query strategies
     query_strategies: dict[str, QueryStrategy] = {
-        "BreakingTies": BreakingTies(),
-        "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy": AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
+        "RandomSampling": RandomSampling(),
+        "BreakingTies": base_strategy,
+        "AugmentedSearchSpaceExtensionQueryStrategy": AugmentedSearchSpaceExtensionQueryStrategy(
             base_strategy=base_strategy, augmented_indices=augmented_indices
         ),
-        "AugmentedSearchSpaceExtensionQueryStrategy": AugmentedSearchSpaceExtensionQueryStrategy(
+        "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy": AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
             base_strategy=base_strategy, augmented_indices=augmented_indices
         ),
         "AugmentedOutcomesQueryStrategy": AugmentedOutcomesQueryStrategy(
             base_strategy=base_strategy, augmented_indices=augmented_indices
         ),
-        "AugmentedSearchSpaceExtensionAndOutcomeLeastConfidenceQueryStrategy": AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
-            base_strategy=augmented_least_confidence_strategy,
-            augmented_indices=augmented_indices,
-        ),
-        "AugmentedSearchSpaceExtensionLeastConfidenceQueryStrategy": AugmentedSearchSpaceExtensionQueryStrategy(
-            base_strategy=augmented_least_confidence_strategy,
-            augmented_indices=augmented_indices,
-        ),
-        "AugmentedOutcomesLeastConfidenceQueryStrategy": AugmentedOutcomesQueryStrategy(
-            base_strategy=augmented_least_confidence_strategy,
+        "AverageAcrossAugmentedQueryStrategy": average_across_augmented_strategy,
+        "AverageAcrossAugmentedExtendedOutcomesQueryStrategy": AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
+            base_strategy=average_across_augmented_strategy,
             augmented_indices=augmented_indices,
         ),
     }

@@ -11,7 +11,9 @@ class AugmentedQueryStrategyBase(QueryStrategy):
     which expend other BaseStrategys by using an augmented dataset.
     """
 
-    def __init__(self, augmented_indices: dict[int, list[int]] = {}) -> None:
+    def __init__(
+        self, base_strategy: QueryStrategy, augmented_indices: dict[int, list[int]] = {}
+    ) -> None:
         """Initialize the strategy by providing the augmented_indices for the dataset
             and the
 
@@ -27,6 +29,8 @@ class AugmentedQueryStrategyBase(QueryStrategy):
         self.flattened_augmented_values = sorted(
             {x for v in self.augmented_indices.values() for x in v}
         )
+
+        self.base_strategy = base_strategy
 
     def get_origin_augmented_index(self, aug_elem_index) -> int:
         # TODO: More robust by introducing try except for index error
@@ -123,31 +127,17 @@ class AugmentedOutcomesQueryStrategy(AugmentedQueryStrategyBase):
     query method.
     """
 
-    def __init__(
-        self, base_strategy: QueryStrategy, augmented_indices: dict[int, list[int]] = {}
-    ) -> None:
-        """Initialize by adding the base_strategy that will be used for calculating a score for
-            the samples.
-
-        Args:
-            base_strategy (QueryStrategy): The strategy that will be used to calculate
-                the scores. Can be any strategy provided by the small_text framework.
-            augmented_indices (dict[int, list[int]], optional): See base class. Defaults to {}.
-        """
-        super().__init__(augmented_indices)
-        self.base_strategy = base_strategy
-
     def query(self, clf, dataset, indices_unlabeled, indices_labeled, y, n=10):
         """In the base_strategy we only use the indices of the real elements
         in the dataset, as well as indices_unlabeled/labeled. Then we extend
         the return of the query method by adding the augmented indices.
         """
-        unaugmented_indices = list(self.augmented_indices.keys())
+        original_indices = list(self.augmented_indices.keys())
         query = self.base_strategy.query(
             clf,
-            dataset[unaugmented_indices],
-            np.intersect1d(indices_unlabeled, unaugmented_indices),
-            np.intersect1d(indices_labeled, unaugmented_indices),
+            dataset[original_indices],
+            np.intersect1d(indices_unlabeled, original_indices),
+            np.intersect1d(indices_labeled, original_indices),
             y,
             n,
         )
@@ -176,20 +166,6 @@ class AugmentedSearchSpaceExtensionQueryStrategy(AugmentedQueryStrategyBase):
     of the query method.
     """
 
-    def __init__(
-        self, base_strategy: QueryStrategy, augmented_indices: dict[int, list[int]] = {}
-    ) -> None:
-        """Initialize by adding the base_strategy that will be used for calculating a score for
-            the samples.
-
-        Args:
-            base_strategy (QueryStrategy): base_strategy (QueryStrategy): The strategy that will be used to calculate
-                the scores. Can be any strategy provided by the small_text framework.
-            augmented_indices (dict[int, list[int]], optional): See base class. Defaults to {}.
-        """
-        super().__init__(augmented_indices)
-        self.base_strategy = base_strategy
-
     def query(self, clf, dataset, indices_unlabeled, indices_labeled, y, n=10):
         (
             original_indices_queried,
@@ -207,20 +183,6 @@ class AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(AugmentedQueryStrateg
     of the query method.
     """
 
-    def __init__(
-        self, base_strategy: QueryStrategy, augmented_indices: dict[int, list[int]] = {}
-    ) -> None:
-        """Initialize by adding the base_strategy that will be used for calculating a score for
-            the samples.
-
-        Args:
-            base_strategy (QueryStrategy): base_strategy (QueryStrategy): The strategy that will be used to calculate
-                the scores. Can be any strategy provided by the small_text framework.
-            augmented_indices (dict[int, list[int]], optional): See base class. Defaults to {}.
-        """
-        super().__init__(augmented_indices)
-        self.base_strategy = base_strategy
-
     def query(self, clf, dataset, indices_unlabeled, indices_labeled, y, n=10):
         (
             original_indices_queried,
@@ -231,37 +193,46 @@ class AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(AugmentedQueryStrateg
         return np.concatenate((original_indices_queried, augmented_indices_queried))
 
 
-class AugmentedLeastConfidenceQueryStrategy(
+class AverageAcrossAugmentedQueryStrategy(
     AugmentedQueryStrategyBase, ConfidenceBasedQueryStrategy
 ):
     """Selects instances, where the median of the confidence between
     a sample and its augmented samples is the lowest.
     """
 
+    def __init__(
+        self, base_strategy: QueryStrategy, augmented_indices: dict[int, list[int]] = {}
+    ) -> None:
+        super().__init__(base_strategy, augmented_indices)
+
+        if not isinstance(base_strategy, ConfidenceBasedQueryStrategy):
+            raise TypeError(
+                "The base strategy must be an instance of ConfidenceBasedQueryStrategy."
+            )
+
     def query(self, clf, dataset, indices_unlabeled, indices_labeled, y, n=10):
         return super().query(clf, dataset, indices_unlabeled, indices_labeled, y, n)
 
     def get_confidence(self, clf, dataset, indices_unlabeled, indices_labeled, y):
         # Use the best confidence from the classifier
-        proba = clf.predict_proba(dataset).max(axis=1)
+        proba = self.base_strategy.get_confidence(
+            clf, dataset, indices_unlabeled, indices_labeled, y
+        )
 
-        try:
-            augmented_indices_probas = [proba[x] for x in self.augmented_indices.keys()]
-        except IndexError:
-            raise IndexError(
-                "The augmented_indices dictionary is not consistent with the dataset."
-            )
-
-        for i in self.augmented_indices:
-            proba[i] = np.mean(
+        for original_index in self.augmented_indices:
+            proba[original_index] = np.mean(
                 np.concatenate(
-                    ([proba[i]], augmented_indices_probas)
+                    (
+                        [proba[original_index]],
+                        [
+                            proba[x] for x in self.augmented_indices[original_index]
+                        ],
+                    )
                 )
             )
-            for x in self.flattened_augmented_values:
-                proba[x] = 0
-
+            for augmented_index in self.augmented_indices[original_index]:
+                proba[augmented_index] = 1 if self.lower_is_better else 0
         return proba
 
     def __str__(self):
-        return "AugmentedEntropyQueryStrategy"
+        return "AverageAcrossAugmentedQueryStrategy"

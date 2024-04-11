@@ -5,13 +5,13 @@ from nlpaug.augmenter import word as naw
 from core.augment import create_augmented_dataset
 
 query_strategies = [
+    "RandomSampling",
     "BreakingTies",
-    "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
     "AugmentedSearchSpaceExtensionQueryStrategy",
+    "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
     "AugmentedOutcomesQueryStrategy",
-    # "AugmentedSearchSpaceExtensionAndOutcomeLeastConfidenceQueryStrategy",
-    # "AugmentedSearchSpaceExtensionLeastConfidenceQueryStrategy",
-    # "AugmentedOutcomesLeastConfidenceQueryStrategy",
+    "AverageAcrossAugmentedQueryStrategy",
+    "AverageAcrossAugmentedExtendedOutcomesQueryStrategy",
 ]
 
 num_queries = 50
@@ -42,6 +42,6 @@ for dataset_name in datasets:
             if query_strategy != "BreakingTies"
             else 0,
             query_strategy=query_strategy,
-            model=TransformerModels.BERT.value,
-            device="cuda",
+            # model=TransformerModels.BERT.value,
+            # device="cuda",
         )
