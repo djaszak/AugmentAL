@@ -104,17 +104,18 @@ def create_active_learner(
     return active_learner, indices_labeled
 
 
-def evaluate(active_learner, train, test):
+def evaluate(active_learner, train, test) -> set[float, float]:
     y_pred = active_learner.classifier.predict(train)
     y_pred_test = active_learner.classifier.predict(test)
     
     # Notice: We observe the train accuracy now.
     train_acc = accuracy_score(y_pred, train.y)
+    test_acc = accuracy_score(y_pred_test, test.y)
 
     print('Train accuracy: {:.2f}'.format(train_acc))
-    print('Test accuracy: {:.2f}'.format(accuracy_score(y_pred_test, test.y)))
+    print('Test accuracy: {:.2f}'.format(test_acc))
     
-    return train_acc
+    return train_acc, test_acc
 
 
 def fill_query_with_augmented_search_room(
