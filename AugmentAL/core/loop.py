@@ -1,9 +1,6 @@
-import nlpaug.augmenter.word as naw
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from core.augment import create_augmented_dataset
-from core.constants import Datasets
 from core.core import (
     create_active_learner,
     create_small_text_dataset,
@@ -15,7 +12,6 @@ from core.query_strategies import (
     AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy,
     AugmentedSearchSpaceExtensionQueryStrategy,
 )
-from datasets import load_dataset
 from small_text import BreakingTies, QueryStrategy, KappaAverage
 
 # CONSTANTS
@@ -31,7 +27,6 @@ def run_active_learning_loop(
     num_queries: int = 5,
     num_samples: int = 20,
     num_augmentations: int = 2,
-    dataset: Datasets = Datasets.ROTTEN,
     query_strategy: str
     | QueryStrategy = "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
 ):
@@ -125,7 +120,7 @@ def run_active_learning_loop(
     accuracies = np.array(results)
 
     # convert to pandas dataframe
-    d = {"iterations": iterations, "accuracies": accuracies}
+    d = {"iterations": iterations, "accuracies": accuracies, "stopping_history": stopping_history}
     d_frame = pd.DataFrame(d)
 
     saving_name = f"{query_strategy}_{base_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.json"

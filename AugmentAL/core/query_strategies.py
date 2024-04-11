@@ -246,7 +246,7 @@ class AugmentedLeastConfidenceQueryStrategy(
         proba = clf.predict_proba(dataset).max(axis=1)
 
         try:
-            augmented_indices_probas = [proba[x] for x in self.augmented_indices[i]]
+            augmented_indices_probas = [proba[x] for x in self.augmented_indices.keys()]
         except IndexError:
             raise IndexError(
                 "The augmented_indices dictionary is not consistent with the dataset."

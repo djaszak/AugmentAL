@@ -39,7 +39,7 @@ def create_small_text_dataset(
     Returns:
         tuple[TransformersDataset, TransformersDataset, int]: A train and a test set and the num_labels
     """
-    tokenizer = AutoTokenizer.from_pretrained(TransformerModels.BERT_TINY.value)
+    tokenizer = AutoTokenizer.from_pretrained(TransformerModels.BERT.value)
 
     num_classes = dataset.features["label"].num_classes
 
@@ -74,6 +74,8 @@ def create_active_learner(
     num_classes: int,
     query_strategy: QueryStrategy = PredictionEntropy,
     training_indices: np.ndarray = None,
+    model: str = TransformerModels.BERT_TINY.value,
+    device: str = "",
 ) -> set[PoolBasedActiveLearner, int]:
     """Load transformer, build clf_factory based on it and return a PoolBasedActiveLearner.
 
@@ -84,16 +86,14 @@ def create_active_learner(
     Returns:
         set[PoolBasedActiveLearner, int]: The active learner and the indices of pre_labeled data after warm start
     """
-    transformer_model = TransformerModelArguments(TransformerModels.BERT.value)
-    
+    transformer_model = TransformerModelArguments(model)
+    kwargs = {"mini_batch_size": 32, "class_weight": "balanced"} 
+    if device:
+        kwargs["device"] = device
     clf_factory = TransformerBasedClassificationFactory(
         transformer_model,
         num_classes,
-        kwargs={
-                    'device': 'cuda', 
-                    'mini_batch_size': 32,
-                    'class_weight': 'balanced'
-                },
+        kwargs=kwargs
     )
 
     active_learner = PoolBasedActiveLearner(clf_factory, query_strategy, train_set)

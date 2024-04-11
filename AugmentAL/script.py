@@ -3,20 +3,11 @@ from core.constants import Datasets
 from datasets import load_dataset
 from nlpaug.augmenter import word as naw
 from core.augment import create_augmented_dataset
-from enum import Enum
-
-run_active_learning_loop(
-    num_queries=3,
-    num_samples=20,
-    num_augmentations=1,
-    dataset=Datasets.ROTTEN,
-    query_strategy="AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
-)
 
 query_strategies = [
-    "BreakingTies",
+    # "BreakingTies",
     # "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
-    # "AugmentedSearchSpaceExtensionQueryStrategy",
+    "AugmentedSearchSpaceExtensionQueryStrategy",
     # "AugmentedOutcomesQueryStrategy",
     # "AugmentedSearchSpaceExtensionAndOutcomeLeastConfidenceQueryStrategy",
     # "AugmentedSearchSpaceExtensionLeastConfidenceQueryStrategy",
