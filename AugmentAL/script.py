@@ -1,5 +1,5 @@
 from core.loop import run_active_learning_loop
-from core.constants import Datasets
+from core.constants import Datasets, TransformerModels
 from datasets import load_dataset
 from nlpaug.augmenter import word as naw
 from core.augment import create_augmented_dataset
@@ -41,6 +41,7 @@ for dataset_name in datasets:
             num_augmentations=num_augmentations
             if query_strategy != "BreakingTies"
             else 0,
-            dataset=dataset,
             query_strategy=query_strategy,
+            model=TransformerModels.BERT.value,
+            device="cuda",
         )
