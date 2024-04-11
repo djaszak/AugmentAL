@@ -11,6 +11,7 @@ from core.query_strategies import (
     AugmentedOutcomesQueryStrategy,
     AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy,
     AugmentedSearchSpaceExtensionQueryStrategy,
+    AugmentedLeastConfidenceQueryStrategy
 )
 from small_text import BreakingTies, QueryStrategy, KappaAverage
 
