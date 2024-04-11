@@ -6,8 +6,8 @@ from core.core import (
     create_small_text_dataset,
     evaluate,
 )
+from core.constants import TransformerModels
 from core.query_strategies import (
-    AugmentedLeastConfidenceQueryStrategy,
     AugmentedOutcomesQueryStrategy,
     AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy,
     AugmentedSearchSpaceExtensionQueryStrategy,
@@ -29,6 +29,8 @@ def run_active_learning_loop(
     num_augmentations: int = 2,
     query_strategy: str
     | QueryStrategy = "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
+    model: str = TransformerModels.BERT_TINY.value,
+    device: str = ""
 ):
     num_classes = raw_train.features["label"].num_classes
     stopping_criterion = KappaAverage(num_classes, kappa=0.8)
@@ -74,6 +76,8 @@ def run_active_learning_loop(
         train_set=train,
         num_classes=num_classes,
         query_strategy=chosen_strategy,
+        model=model,
+        device=device,
     )
 
     results = []
