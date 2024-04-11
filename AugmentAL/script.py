@@ -6,17 +6,17 @@ from core.augment import create_augmented_dataset
 
 query_strategies = [
     "BreakingTies",
-    # "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
-    # "AugmentedSearchSpaceExtensionQueryStrategy",
-    # "AugmentedOutcomesQueryStrategy",
+    "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
+    "AugmentedSearchSpaceExtensionQueryStrategy",
+    "AugmentedOutcomesQueryStrategy",
     # "AugmentedSearchSpaceExtensionAndOutcomeLeastConfidenceQueryStrategy",
     # "AugmentedSearchSpaceExtensionLeastConfidenceQueryStrategy",
     # "AugmentedOutcomesLeastConfidenceQueryStrategy",
 ]
 
-num_queries = 10
+num_queries = 50
 num_samples = 20
-num_augmentations = 2
+num_augmentations = 5
 
 datasets = [Datasets.ROTTEN.value]
 
@@ -42,4 +42,6 @@ for dataset_name in datasets:
             if query_strategy != "BreakingTies"
             else 0,
             query_strategy=query_strategy,
+            model=TransformerModels.BERT.value,
+            device="cuda",
         )
