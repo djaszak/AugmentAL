@@ -5,18 +5,18 @@ from nlpaug.augmenter import word as naw
 from core.augment import create_augmented_dataset
 
 query_strategies = [
-    # "BreakingTies",
+    "BreakingTies",
     # "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
-    "AugmentedSearchSpaceExtensionQueryStrategy",
+    # "AugmentedSearchSpaceExtensionQueryStrategy",
     # "AugmentedOutcomesQueryStrategy",
     # "AugmentedSearchSpaceExtensionAndOutcomeLeastConfidenceQueryStrategy",
     # "AugmentedSearchSpaceExtensionLeastConfidenceQueryStrategy",
     # "AugmentedOutcomesLeastConfidenceQueryStrategy",
 ]
 
-num_queries = 20
+num_queries = 10
 num_samples = 20
-num_augmentations = 5
+num_augmentations = 2
 
 datasets = [Datasets.ROTTEN.value]
 
@@ -42,6 +42,4 @@ for dataset_name in datasets:
             if query_strategy != "BreakingTies"
             else 0,
             query_strategy=query_strategy,
-            model=TransformerModels.BERT.value,
-            device="cuda",
         )

@@ -26,7 +26,7 @@ def get_json_files(folder_path):
 for file in get_json_files(str(Path(__file__).parent / "../results")):
     with open(file, "r") as f:
         frame = (
-            pd.json_normalize(json.load(f)["accuracies"])
+            pd.json_normalize(json.load(f)["test_accuracies"])
             .melt(id_vars=["0"], var_name="Iteration", value_name="Accuracy")
             .drop(columns=["0"])
         )

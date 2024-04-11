@@ -11,7 +11,7 @@ from core.query_strategies import (
     AugmentedOutcomesQueryStrategy,
     AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy,
     AugmentedSearchSpaceExtensionQueryStrategy,
-    AugmentedLeastConfidenceQueryStrategy
+    AugmentedLeastConfidenceQueryStrategy,
 )
 from small_text import BreakingTies, QueryStrategy, KappaAverage
 
@@ -31,7 +31,7 @@ def run_active_learning_loop(
     query_strategy: str
     | QueryStrategy = "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
     model: str = TransformerModels.BERT_TINY.value,
-    device: str = ""
+    device: str = "",
 ):
     num_classes = raw_train.features["label"].num_classes
     stopping_criterion = KappaAverage(num_classes, kappa=0.8)
@@ -53,10 +53,12 @@ def run_active_learning_loop(
             base_strategy=base_strategy, augmented_indices=augmented_indices
         ),
         "AugmentedSearchSpaceExtensionAndOutcomeLeastConfidenceQueryStrategy": AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
-            base_strategy=augmented_least_confidence_strategy, augmented_indices=augmented_indices
+            base_strategy=augmented_least_confidence_strategy,
+            augmented_indices=augmented_indices,
         ),
         "AugmentedSearchSpaceExtensionLeastConfidenceQueryStrategy": AugmentedSearchSpaceExtensionQueryStrategy(
-            base_strategy=augmented_least_confidence_strategy, augmented_indices=augmented_indices
+            base_strategy=augmented_least_confidence_strategy,
+            augmented_indices=augmented_indices,
         ),
         "AugmentedOutcomesLeastConfidenceQueryStrategy": AugmentedOutcomesQueryStrategy(
             base_strategy=augmented_least_confidence_strategy,
@@ -81,11 +83,16 @@ def run_active_learning_loop(
         device=device,
     )
 
-    results = []
+    test_results = []
+    train_results = []
     stopping_history = []
-    
-    results.append(evaluate(active_learner, train[indices_labeled], test))
-    stopping_history.append(stopping_criterion.stop(predictions=active_learner.classifier.predict(train)))
+
+    train_results.append(evaluate(active_learner, train[indices_labeled], test)[0])
+    test_results.append(evaluate(active_learner, train[indices_labeled], test)[1])
+
+    stopping_history.append(
+        stopping_criterion.stop(predictions=active_learner.classifier.predict(train))
+    )
 
     for i in range(num_queries):
         # ...where each iteration consists of labelling 20 samples
@@ -108,10 +115,13 @@ def run_active_learning_loop(
 
         print("---------------")
         print(f"Iteration #{i} ({len(indices_labeled)} samples)")
-        results.append(evaluate(active_learner, train[indices_labeled], test))
+        train_results.append(evaluate(active_learner, train[indices_labeled], test)[0])
+        test_results.append(evaluate(active_learner, train[indices_labeled], test)[1])
 
-        stopping_criterion_response = stopping_criterion.stop(predictions=active_learner.classifier.predict(train))
-        print(f'Stop: {stopping_criterion_response}')
+        stopping_criterion_response = stopping_criterion.stop(
+            predictions=active_learner.classifier.predict(train)
+        )
+        print(f"Stop: {stopping_criterion_response}")
         stopping_history.append(stopping_criterion_response)
 
         # Write indices_queried to a txt file after every third iteration
@@ -122,10 +132,16 @@ def run_active_learning_loop(
                 f.write(", ".join(map(str, indices_queried)) + "\n")
 
     iterations = np.arange(num_queries + 1)
-    accuracies = np.array(results)
+    test_accuracies = np.array(test_results)
+    train_accuracies = np.array(train_results)
 
     # convert to pandas dataframe
-    d = {"iterations": iterations, "accuracies": accuracies, "stopping_history": stopping_history}
+    d = {
+        "iterations": iterations,
+        "test_accuracies": test_accuracies,
+        "train_accuracies": train_accuracies,
+        "stopping_history": stopping_history,
+    }
     d_frame = pd.DataFrame(d)
 
     saving_name = f"{query_strategy}_{base_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.json"
