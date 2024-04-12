@@ -1,7 +1,6 @@
 from core.loop import run_active_learning_loop
-from core.constants import Datasets, TransformerModels
+from core.constants import Datasets, TransformerModels, AugmentationMethods
 from datasets import load_dataset
-from nlpaug.augmenter import word as naw
 from core.augment import create_augmented_dataset
 
 query_strategies = [
@@ -27,7 +26,7 @@ for dataset_name in datasets:
     raw_test = dataset["test"]
     raw_train = dataset["train"]
     raw_augmented_train, augmented_indices = create_augmented_dataset(
-        raw_train, naw.SynonymAug(aug_src="wordnet"), n=num_augmentations
+        raw_train, AugmentationMethods.RANDOM_DELETE.value, n=num_augmentations
     )
 
     for query_strategy in query_strategies:
