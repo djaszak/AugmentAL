@@ -10,7 +10,7 @@ query_strategies = [
     # "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
     # "AugmentedOutcomesQueryStrategy",
     "AverageAcrossAugmentedQueryStrategy",
-    "AverageAcrossAugmentedExtendedOutcomesQueryStrategy",
+    # "AverageAcrossAugmentedExtendedOutcomesQueryStrategy",
 ]
 
 num_queries = 5
@@ -26,7 +26,7 @@ for dataset_name in datasets:
     raw_test = dataset["test"]
     raw_train = dataset["train"]
     raw_augmented_train, augmented_indices = create_augmented_dataset(
-        raw_train, AugmentationMethods.RANDOM_DELETE.value, n=num_augmentations
+        raw_train, AugmentationMethods.BART_SUBSTITUTE.value, n=num_augmentations
     )
 
     for query_strategy in query_strategies:
