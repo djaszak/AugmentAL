@@ -12,7 +12,7 @@
 #SBATCH --output=/beegfs/ws/1/s8822750-active-learning-data-augmentation/logs/out-%A_%a.txt
 #SBATCH --error=/beegfs/ws/1/s8822750-active-learning-data-augmentation/logs/error-%A_%a.txt
 
-release/23.10  GCC/11.3.0  OpenMPI/4.1.4
+module load release/23.10  GCC/11.3.0  OpenMPI/4.1.4
 module load PyTorch/1.13.1-CUDA-11.7.0
 # module load TensorFlow/2.11.0-CUDA-11.7.0
 
