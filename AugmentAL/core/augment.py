@@ -1,4 +1,5 @@
 from pathlib import Path
+import multiprocessing
 
 import datasets
 import nlpaug
@@ -10,7 +11,7 @@ aug = naw.SynonymAug(aug_src="wordnet")
 
 def create_augmented_dataset(
     dataset: datasets.Dataset,
-    augmenter: nlpaug.augmenter.augment.Augmenter,
+    augmenter,
     feature: str = "text",
     n=3,
 ) -> set[datasets.Dataset, dict[int, list[int]]]:
@@ -27,6 +28,7 @@ def create_augmented_dataset(
     augmented_sets = [
         dataset.map(
             lambda row: {feature: augmenter.augment(row[feature])[0]},
+            # num_proc=4, # multiprocessing.cpu_count(),
         )
         for _ in range(n)
     ]
