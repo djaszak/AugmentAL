@@ -23,7 +23,6 @@ np.random.seed(SEED)
 def run_active_learning_loop(
     raw_test,
     raw_train,
-    raw_augmented_train,
     augmented_indices,
     num_queries: int = 5,
     num_samples: int = 20,
@@ -62,7 +61,7 @@ def run_active_learning_loop(
 
     test = create_small_text_dataset(raw_test)
     train = create_small_text_dataset(
-        raw_augmented_train if query_strategy != "BreakingTies" else raw_train
+       raw_train
     )
     chosen_strategy = (
         query_strategies[query_strategy]

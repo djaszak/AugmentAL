@@ -24,14 +24,15 @@ def get_json_files(folder_path):
     return json_files
 
 for file in get_json_files(str(Path(__file__).parent / "../results")):
-    with open(file, "r") as f:
-        frame = (
-            pd.json_normalize(json.load(f)["test_accuracies"])
-            .melt(id_vars=["0"], var_name="Iteration", value_name="Accuracy")
-            .drop(columns=["0"])
-        )
+    if "50" in file:
+        with open(file, "r") as f:
+            frame = (
+                pd.json_normalize(json.load(f)["test_accuracies"])
+                .melt(id_vars=["0"], var_name="Iteration", value_name="Accuracy")
+                .drop(columns=["0"])
+            )
 
-        plt.plot(frame["Iteration"], frame["Accuracy"], label=file.split("/")[-1] + " (mean: " + str(round(frame["Accuracy"].mean(), 2)) + ")")
+            plt.plot(frame["Iteration"], frame["Accuracy"], label=file.split("/")[-1] + " (mean: " + str(round(frame["Accuracy"].mean(), 2)) + ")")
 
 plt.legend()
 plt.show(block=True)

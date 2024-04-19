@@ -1,21 +1,24 @@
 import datasets
-import torch
 import numpy as np
-from sklearn.metrics import accuracy_score
+import torch
+from core.constants import TransformerModels
 from matplotlib import rcParams
-from transformers import AutoTokenizer
+from sklearn.metrics import accuracy_score
 from small_text import (
+    Classifier,
     PoolBasedActiveLearner,
     PredictionEntropy,
-    TransformerBasedClassificationFactory,
-    TransformersDataset,
-    TransformerModelArguments,
-    random_initialization_balanced,
     QueryStrategy,
-    Classifier,
+    TransformerBasedClassificationFactory,
+    TransformerModelArguments,
+    TransformersDataset,
+    random_initialization_balanced,
 )
-from core.constants import TransformerModels
-
+from small_text.integrations.transformers.classifiers.factories import (
+    SetFitClassificationFactory,
+)
+from small_text.integrations.transformers.classifiers.setfit import SetFitModelArguments
+from transformers import AutoTokenizer
 
 # CONSTANTS
 SEED = 2022
@@ -86,15 +89,18 @@ def create_active_learner(
     Returns:
         set[PoolBasedActiveLearner, int]: The active learner and the indices of pre_labeled data after warm start
     """
-    transformer_model = TransformerModelArguments(model)
-    kwargs = {"mini_batch_size": 32, "class_weight": "balanced"} 
-    if device:
-        kwargs["device"] = device
-    clf_factory = TransformerBasedClassificationFactory(
-        transformer_model,
-        num_classes,
-        kwargs=kwargs
-    )
+    # Code for SetFit
+    sentence_transformer_model_name = "sentence-transformers/paraphrase-mpnet-base-v2"
+    setfit_model_args = SetFitModelArguments(sentence_transformer_model_name)
+    clf_factory = SetFitClassificationFactory(setfit_model_args, num_classes)
+    # Code for Transformer
+    # transformer_model = TransformerModelArguments(model)
+    # kwargs = {"mini_batch_size": 32, "class_weight": "balanced"}
+    # if device:
+    #     kwargs["device"] = device
+    # clf_factory = TransformerBasedClassificationFactory(
+    #     transformer_model, num_classes, kwargs=kwargs
+    # )
 
     active_learner = PoolBasedActiveLearner(clf_factory, query_strategy, train_set)
     indices_labeled = warm_start_active_learner(
@@ -107,14 +113,14 @@ def create_active_learner(
 def evaluate(active_learner, train, test) -> set[float, float]:
     y_pred = active_learner.classifier.predict(train)
     y_pred_test = active_learner.classifier.predict(test)
-    
+
     # Notice: We observe the train accuracy now.
     train_acc = accuracy_score(y_pred, train.y)
     test_acc = accuracy_score(y_pred_test, test.y)
 
-    print('Train accuracy: {:.2f}'.format(train_acc))
-    print('Test accuracy: {:.2f}'.format(test_acc))
-    
+    print("Train accuracy: {:.2f}".format(train_acc))
+    print("Test accuracy: {:.2f}".format(test_acc))
+
     return train_acc, test_acc
 
 
