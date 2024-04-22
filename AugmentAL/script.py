@@ -5,15 +5,15 @@ from datasets import load_dataset
 
 query_strategies = [
     # Basic Strategies
-    "RandomSampling",
-    "BreakingTies",
+    # "RandomSampling",
+    # "BreakingTies",
     # Basic Augmented Strategies
-    "AugmentedSearchSpaceExtensionQueryStrategy",
+    # "AugmentedSearchSpaceExtensionQueryStrategy",
     "AugmentedOutcomesQueryStrategy",
-    "AverageAcrossAugmentedQueryStrategy",
+    # "AverageAcrossAugmentedQueryStrategy",
     # Combinations
-    "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
-    "AverageAcrossAugmentedExtendedOutcomesQueryStrategy",
+    # "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
+    # "AverageAcrossAugmentedExtendedOutcomesQueryStrategy",
 ]
 
 datasets = [Datasets.ROTTEN.value]

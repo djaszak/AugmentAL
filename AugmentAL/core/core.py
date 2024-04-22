@@ -90,17 +90,17 @@ def create_active_learner(
         set[PoolBasedActiveLearner, int]: The active learner and the indices of pre_labeled data after warm start
     """
     # Code for SetFit
-    sentence_transformer_model_name = "sentence-transformers/paraphrase-mpnet-base-v2"
-    setfit_model_args = SetFitModelArguments(sentence_transformer_model_name)
-    clf_factory = SetFitClassificationFactory(setfit_model_args, num_classes)
+    # sentence_transformer_model_name = "sentence-transformers/paraphrase-mpnet-base-v2"
+    # setfit_model_args = SetFitModelArguments(sentence_transformer_model_name)
+    # clf_factory = SetFitClassificationFactory(setfit_model_args, num_classes)
     # Code for Transformer
-    # transformer_model = TransformerModelArguments(model)
-    # kwargs = {"mini_batch_size": 32, "class_weight": "balanced"}
-    # if device:
-    #     kwargs["device"] = device
-    # clf_factory = TransformerBasedClassificationFactory(
-    #     transformer_model, num_classes, kwargs=kwargs
-    # )
+    transformer_model = TransformerModelArguments(model)
+    kwargs = {"mini_batch_size": 32, "class_weight": "balanced"}
+    if device:
+        kwargs["device"] = device
+    clf_factory = TransformerBasedClassificationFactory(
+        transformer_model, num_classes, kwargs=kwargs
+    )
 
     active_learner = PoolBasedActiveLearner(clf_factory, query_strategy, train_set)
     indices_labeled = warm_start_active_learner(

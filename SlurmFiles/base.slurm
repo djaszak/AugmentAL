@@ -17,4 +17,4 @@ module load Python/3.10.8
 
 source /beegfs/ws/1/s8822750-active-learning-data-augmentation/active-learning-venv/bin/activate
 
-srun python /home/s8822750/AugmentAL/AugmentAL/script.py
+srun python /home/s8822750/AugmentAL/AugmentAL/synonym_replacement.py
