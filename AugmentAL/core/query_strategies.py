@@ -143,24 +143,23 @@ class AugmentedOutcomesQueryStrategy(AugmentedQueryStrategyBase):
         )
 
         augmented_indices_for_this_key = [
-                    int(x)
-                    for xs in [
-                        self.augmented_indices[x]
-                        for x in query
-                        if x in self.augmented_indices
-                    ]
-                    for x in xs
-                ]
+            int(x)
+            for xs in [
+                self.augmented_indices[x] for x in query if x in self.augmented_indices
+            ]
+            for x in xs
+        ]
         results = np.concatenate(
             (
                 query,
-                augmented_indices_for_this_key
+                augmented_indices_for_this_key,
                 # Get the augmented indices for the query
-        ))
-        return results 
+            )
+        )
+        return results
 
     def __str__(self):
-        return f"AugmentedOutcomesQueryStrategy({self.base_strategy})" 
+        return f"AugmentedOutcomesQueryStrategy({self.base_strategy})"
 
 
 class AugmentedSearchSpaceExtensionQueryStrategy(AugmentedQueryStrategyBase):
@@ -179,8 +178,8 @@ class AugmentedSearchSpaceExtensionQueryStrategy(AugmentedQueryStrategyBase):
         )
         return original_indices_queried
 
-   def __str__(self):
-        return f"AugmentedSearchSpaceExtensionQueryStrategy({self.base_strategy})" 
+    def __str__(self):
+        return f"AugmentedSearchSpaceExtensionQueryStrategy({self.base_strategy})"
 
 
 class AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(AugmentedQueryStrategyBase):
@@ -198,7 +197,7 @@ class AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(AugmentedQueryStrateg
             n, clf, dataset, indices_unlabeled, indices_labeled, y
         )
         return np.concatenate((original_indices_queried, augmented_indices_queried))
-    
+
     def __str__(self):
         return f"AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy({self.base_strategy})"
 
@@ -234,9 +233,7 @@ class AverageAcrossAugmentedQueryStrategy(
                 np.concatenate(
                     (
                         [proba[original_index]],
-                        [
-                            proba[x] for x in self.augmented_indices[original_index]
-                        ],
+                        [proba[x] for x in self.augmented_indices[original_index]],
                     )
                 )
             )

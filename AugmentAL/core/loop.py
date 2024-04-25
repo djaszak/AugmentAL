@@ -59,9 +59,7 @@ def run_active_learning_loop(
     }
 
     test = create_small_text_dataset(raw_test)
-    train = create_small_text_dataset(
-       raw_train
-    )
+    train = create_small_text_dataset(raw_train)
     chosen_strategy = (
         query_strategies[query_strategy]
         if isinstance(query_strategy, str)
@@ -139,6 +137,6 @@ def run_active_learning_loop(
     details_str = f"{query_strategy}_{base_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}"
 
     # with open((Path(__file__).parent / "../results" / saving_name).resolve(), "w") as f:
-        # f.write(d_frame.to_json())
+    # f.write(d_frame.to_json())
 
     return d, details_str

@@ -36,14 +36,16 @@ def create_augmented_dataset(
 
     augmented_full_set = concatenate_datasets(augmented_sets)
 
-    augmenter_str = f"{augmenter.name}_{augmenter.aug_src}_{augmenter.action}_{augmenter.method}"
+    augmenter_str = (
+        f"{augmenter.name}_{augmenter.aug_src}_{augmenter.action}_{augmenter.method}"
+    )
     file_name = f"{augmenter_str}_{n}.txt"
 
-    with open(
-        (Path(__file__).parent / "../results" / file_name).resolve(), "a"
-    ) as f:
-        f.write("".join(
-            [f"{augmented_full_set[i]}\n" for i in range(0, num_rows * n, num_rows)]
-        ))
+    with open((Path(__file__).parent / "../results" / file_name).resolve(), "a") as f:
+        f.write(
+            "".join(
+                [f"{augmented_full_set[i]}\n" for i in range(0, num_rows * n, num_rows)]
+            )
+        )
 
     return augmented_full_set, augmented_indices

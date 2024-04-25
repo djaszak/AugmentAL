@@ -53,46 +53,53 @@ def create_raw_set(
     return raw_test, raw_train, augmented_indices
 
 
-def run_script(augmentation_method: AugmentationMethods | None = None, repetitions: int = 5):
-    path = (Path(__file__).parent / "../results" / augmentation_method.replace(", ", "_")).resolve()
+def run_script(
+    augmentation_method: AugmentationMethods | None = None, repetitions: int = 5
+):
+    path = (
+        Path(__file__).parent / "../results" / augmentation_method.replace(", ", "_")
+    ).resolve()
 
     try:
         os.mkdir(path)
-        print(f"Directory {} successfully created.")
-    except OSError as error:
+        print(f"Directory {path} successfully created.")
+    except OSError:
         print(f"{path} already exists.")
 
     raw_augmented_test, raw_train, augmented_indices = create_raw_set(
-                dataset_name, augmentation_method
-            ) 
+        Datasets.ROTTEN.value, augmentation_method
+    )
 
     raw_unaugmented_test, raw_train, augmented_indices = create_raw_set(
-        dataset_name
+        Datasets.ROTTEN.value
     )
 
     for query_strategy in query_strategies:
         final_results = {}
-        for dataset_name in datasets:
-            raw_test = raw_unaugmented_test if query_strategy == "BreakingTies" or query_strategy == "RandomSampling" else raw_augmented_test
+        raw_test = (
+            raw_unaugmented_test
+            if query_strategy == "BreakingTies" or query_strategy == "RandomSampling"
+            else raw_augmented_test
+        )
 
-            for rep in range(repetitions):
-                results = run_active_learning_loop(
-                    raw_test,
-                    raw_train,
-                    augmented_indices,
-                    num_queries=num_queries,
-                    num_samples=num_samples,
-                    num_augmentations=num_augmentations
-                    if query_strategy != "BreakingTies"
-                    or query_strategy != "RandomSampling"
-                    else 0,
-                    query_strategy=query_strategy,
-                    model=TransformerModels.BERT.value,
-                    device="cuda",
-                )
+        for rep in range(repetitions):
+            results = run_active_learning_loop(
+                raw_test,
+                raw_train,
+                augmented_indices,
+                num_queries=num_queries,
+                num_samples=num_samples,
+                num_augmentations=num_augmentations
+                if query_strategy != "BreakingTies"
+                or query_strategy != "RandomSampling"
+                else 0,
+                query_strategy=query_strategy,
+                model=TransformerModels.BERT.value,
+                device="cuda",
+            )
 
-                final_results[rep] = results
-                saving_name = f"{query_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.json"
+            final_results[rep] = results
+            saving_name = f"{query_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.json"
 
-                with open((path / saving_name).resolve(), "wb") as f:
-                    f.write(pd.DataFrame(final_results).to_json())
+            with open((path / saving_name).resolve(), "wb") as f:
+                f.write(pd.DataFrame(final_results).to_json())

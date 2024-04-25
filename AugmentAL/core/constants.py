@@ -23,7 +23,11 @@ class AugmentationMethods(Enum):
     RANDOM_DELETE = nac.RandomCharAug(action="delete")
     SYNONYM = naw.SynonymAug(aug_src="wordnet")
     BART_SUBSTITUTE = naw.ContextualWordEmbsAug(
-        model_path="facebook/bart-base", model_type="bart", action="substitute", use_custom_api=False, device="cuda"
+        model_path="facebook/bart-base",
+        model_type="bart",
+        action="substitute",
+        use_custom_api=False,
+        device="cuda",
     )
     BACK_TRANSLATION = naw.BackTranslationAug(
         from_model_name="facebook/wmt19-en-de",
