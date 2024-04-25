@@ -142,11 +142,7 @@ class AugmentedOutcomesQueryStrategy(AugmentedQueryStrategyBase):
             n,
         )
 
-        return np.concatenate(
-            (
-                query,
-                # Get the augmented indices for the query
-                [
+        augmented_indices_for_this_key = [
                     int(x)
                     for xs in [
                         self.augmented_indices[x]
@@ -154,9 +150,17 @@ class AugmentedOutcomesQueryStrategy(AugmentedQueryStrategyBase):
                         if x in self.augmented_indices
                     ]
                     for x in xs
-                ],
-            )
-        )
+                ]
+        results = np.concatenate(
+            (
+                query,
+                augmented_indices_for_this_key
+                # Get the augmented indices for the query
+        ))
+        return results 
+
+    def __str__(self):
+        return f"AugmentedOutcomesQueryStrategy({self.base_strategy})" 
 
 
 class AugmentedSearchSpaceExtensionQueryStrategy(AugmentedQueryStrategyBase):
@@ -175,6 +179,9 @@ class AugmentedSearchSpaceExtensionQueryStrategy(AugmentedQueryStrategyBase):
         )
         return original_indices_queried
 
+   def __str__(self):
+        return f"AugmentedSearchSpaceExtensionQueryStrategy({self.base_strategy})" 
+
 
 class AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(AugmentedQueryStrategyBase):
     """This strategy simply utilizes the extension of a dataset done by
@@ -191,6 +198,9 @@ class AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(AugmentedQueryStrateg
             n, clf, dataset, indices_unlabeled, indices_labeled, y
         )
         return np.concatenate((original_indices_queried, augmented_indices_queried))
+    
+    def __str__(self):
+        return f"AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy({self.base_strategy})"
 
 
 class AverageAcrossAugmentedQueryStrategy(
@@ -235,4 +245,4 @@ class AverageAcrossAugmentedQueryStrategy(
         return proba
 
     def __str__(self):
-        return "AverageAcrossAugmentedQueryStrategy"
+        return f"AverageAcrossAugmentedQueryStrategy({self.base_strategy})"

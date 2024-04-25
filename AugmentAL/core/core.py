@@ -66,7 +66,7 @@ def warm_start_active_learner(
     training_indices = (
         y_train[training_indices] if training_indices is not None else y_train
     )
-    indices_initial = random_initialization_balanced(y_train, n_samples=20)
+    indices_initial = random_initialization_balanced(training_indices, n_samples=20)
     active_learner.initialize_data(indices_initial, y_train[indices_initial])
 
     return indices_initial

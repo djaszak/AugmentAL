@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from pathlib import Path
 from core.core import (
     create_active_learner,
@@ -29,13 +28,13 @@ def run_active_learning_loop(
     num_augmentations: int = 2,
     query_strategy: str
     | QueryStrategy = "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
+    base_strategy: QueryStrategy = BreakingTies(),
     model: str = TransformerModels.BERT_TINY.value,
     device: str = "",
-):
+) -> (dict, str):
     num_classes = raw_train.features["label"].num_classes
     stopping_criterion = KappaAverage(num_classes, kappa=0.8)
 
-    base_strategy = BreakingTies()
     average_across_augmented_strategy = AverageAcrossAugmentedQueryStrategy(
         base_strategy=base_strategy, augmented_indices=augmented_indices
     )
@@ -71,6 +70,7 @@ def run_active_learning_loop(
     active_learner, indices_labeled = create_active_learner(
         train_set=train,
         num_classes=num_classes,
+        training_indices=[x for x in augmented_indices.keys()],
         query_strategy=chosen_strategy,
         model=model,
         device=device,
@@ -96,7 +96,7 @@ def run_active_learning_loop(
         # list. Just iterate over it, let the original sample be labeled
         # and add the label that is gotten to the virtual samples, which
         # are retrieved by augmented_indices.
-        txt_filename = f"{query_strategy}_{base_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.txt"
+        txt_filename = f"{query_strategy}_{base_strategy}_{num_queries}_queries_{num_samples}_num_samples_{num_augmentations}_num_augmentations.txt"
         indices_queried = active_learner.query(num_samples=num_samples)
 
         y = train.y[indices_queried]
@@ -135,9 +135,10 @@ def run_active_learning_loop(
         "train_accuracies": train_accuracies,
         "stopping_history": stopping_history,
     }
-    d_frame = pd.DataFrame(d)
 
-    saving_name = f"{query_strategy}_{base_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.json"
+    details_str = f"{query_strategy}_{base_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}"
 
-    with open((Path(__file__).parent / "../results" / saving_name).resolve(), "w") as f:
-        f.write(d_frame.to_json())
+    # with open((Path(__file__).parent / "../results" / saving_name).resolve(), "w") as f:
+        # f.write(d_frame.to_json())
+
+    return d, details_str

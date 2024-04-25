@@ -36,7 +36,8 @@ def create_augmented_dataset(
 
     augmented_full_set = concatenate_datasets(augmented_sets)
 
-    file_name = f"{augmenter}_{n}.txt"
+    augmenter_str = f"{augmenter.name}_{augmenter.aug_src}_{augmenter.action}_{augmenter.method}"
+    file_name = f"{augmenter_str}_{n}.txt"
 
     with open(
         (Path(__file__).parent / "../results" / file_name).resolve(), "a"

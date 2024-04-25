@@ -1,0 +1,10 @@
+{'text': 'the rock is destined to be the 21st century\'s new " conan " and that he\'s going to make a splash even greater than arnold schwarzenegger , jean-claud van damme or steven segal .', 'label': 1}
+{'text': 'the rock be destined to cost the 21st century \' s new " conan " and that he \' s going to make a splash still greater than arnold schwarzenegger, jean - claud van damme operating theater steven george segal.', 'label': 1}
+{'text': 'the rock is destined to be the 21st century\'s new " conan " and that he\'s going to make a splash even greater than arnold schwarzenegger , jean-claud van damme or steven segal .', 'label': 1}
+{'text': 'the rock is destined to be the 21st century \' s new " conan " and that he \' s proceed to make a splashing yet greater than arnold schwarzenegger, jean - claud vanguard damme or steven segal.', 'label': 1}
+{'text': 'the rock is destined to be the 21st century\'s new " conan " and that he\'s going to make a splash even greater than arnold schwarzenegger , jean-claud van damme or steven segal .', 'label': 1}
+{'text': 'the rock is doom to be the 21st one c \' s new " conan " and that helium \' s lead to gain a splash even greater than arnold schwarzenegger, jean - claud van damme or steven segal.', 'label': 1}
+{'text': 'the rock is destined to be the 21st century\'s new " conan " and that he\'s going to make a splash even greater than arnold schwarzenegger , jean-claud van damme or steven segal .', 'label': 1}
+{'text': 'the rock is destined to be the 21st century \' s modern " conan " and that helium \' s going to make a splash even greater than arnold schwarzenegger, jean - claud van damme operating room steven george segal.', 'label': 1}
+{'text': 'the rock is destined to be the 21st century\'s new " conan " and that he\'s going to make a splash even greater than arnold schwarzenegger , jean-claud van damme or steven segal .', 'label': 1}
+{'text': 'the stone is destined to embody the twenty first century \' s novel " conan " and that he \' s going to make a splash still greater than arnold schwarzenegger, jean - claud van damme or steven segal.', 'label': 1}
