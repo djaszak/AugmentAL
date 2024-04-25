@@ -23,9 +23,9 @@ query_strategies = [
 
 datasets = [Datasets.ROTTEN.value]
 
-num_queries = 50
-num_samples = 20
-num_augmentations = 5
+num_queries = 5
+num_samples = 10
+num_augmentations = 2
 
 
 def create_raw_set(
@@ -57,8 +57,10 @@ def run_script(
     augmentation_method: AugmentationMethods | None = None, repetitions: int = 5
 ):
     path = (
-        Path(__file__).parent / "../results" / augmentation_method.replace(", ", "_")
+        Path(os.getcwd()) / "results" / str(augmentation_method).replace(" ", "_")
     ).resolve()
+
+    print(path)
 
     try:
         os.mkdir(path)
