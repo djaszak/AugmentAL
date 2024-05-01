@@ -23,9 +23,9 @@ query_strategies = [
 
 datasets = [Datasets.ROTTEN.value]
 
-num_queries = 5
-num_samples = 10
-num_augmentations = 2
+num_queries = 50
+num_samples = 20
+num_augmentations = 5
 
 
 def create_raw_set(
@@ -57,7 +57,7 @@ def run_script(
     augmentation_method: AugmentationMethods | None = None, repetitions: int = 5
 ):
     path = (
-        Path(os.getcwd()) / "results" / str(augmentation_method).replace(" ", "_")
+        Path(__file__).parent / "results" / str(augmentation_method).replace(" ", "_")
     ).resolve()
 
     print(path)
@@ -72,7 +72,7 @@ def run_script(
         Datasets.ROTTEN.value, augmentation_method
     )
 
-    raw_unaugmented_test, raw_train, augmented_indices = create_raw_set(
+    raw_unaugmented_test, raw_train, _ = create_raw_set(
         Datasets.ROTTEN.value
     )
 
@@ -103,5 +103,5 @@ def run_script(
             final_results[rep] = results
             saving_name = f"{query_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.json"
 
-            with open((path / saving_name).resolve(), "wb") as f:
+            with open((path / saving_name).resolve(), "w") as f:
                 f.write(pd.DataFrame(final_results).to_json())
