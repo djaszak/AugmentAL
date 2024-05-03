@@ -8,18 +8,6 @@ from core.constants import AugmentationMethods, Datasets, TransformerModels
 from core.loop import run_active_learning_loop
 from datasets import load_dataset
 
-query_strategies = [
-    # Basic Strategies
-    "RandomSampling",
-    "BreakingTies",
-    # Basic Augmented Strategies
-    "AugmentedSearchSpaceExtensionQueryStrategy",
-    "AugmentedOutcomesQueryStrategy",
-    "AverageAcrossAugmentedQueryStrategy",
-    # Combinations
-    "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
-    "AverageAcrossAugmentedExtendedOutcomesQueryStrategy",
-]
 
 datasets = [Datasets.ROTTEN.value]
 
@@ -60,26 +48,41 @@ def run_script(
         Path(__file__).parent / "results" / str(augmentation_method).replace(" ", "_")
     ).resolve()
 
-    print(path)
-
     try:
         os.mkdir(path)
         print(f"Directory {path} successfully created.")
     except OSError:
         print(f"{path} already exists.")
 
-    raw_augmented_test, raw_train, augmented_indices = create_raw_set(
-        Datasets.ROTTEN.value, augmentation_method
-    )
+    if augmentation_method:
+        raw_augmented_test, raw_train, augmented_indices = create_raw_set(
+            Datasets.ROTTEN.value, augmentation_method
+        )
 
     raw_unaugmented_test, raw_train, _ = create_raw_set(Datasets.ROTTEN.value)
+
+    query_strategies = (
+        [
+            # Basic Augmented Strategies
+            "AugmentedSearchSpaceExtensionQueryStrategy",
+            "AugmentedOutcomesQueryStrategy",
+            "AverageAcrossAugmentedQueryStrategy",
+            # Combinations
+            "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
+            "AverageAcrossAugmentedExtendedOutcomesQueryStrategy",
+        ]
+        if augmentation_method
+        else [
+            # Basic Strategies
+            "RandomSampling",
+            "BreakingTies",
+        ]
+    )
 
     for query_strategy in query_strategies:
         final_results = {}
         raw_test = (
-            raw_unaugmented_test
-            if query_strategy == "BreakingTies" or query_strategy == "RandomSampling"
-            else raw_augmented_test
+            raw_unaugmented_test if augmentation_method is None else raw_augmented_test
         )
 
         for rep in range(repetitions):
