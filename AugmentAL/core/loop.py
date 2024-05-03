@@ -68,7 +68,9 @@ def run_active_learning_loop(
     active_learner, indices_labeled = create_active_learner(
         train_set=train,
         num_classes=num_classes,
-        training_indices=[x for x in augmented_indices.keys()] if augmented_indices else None,
+        training_indices=[x for x in augmented_indices.keys()]
+        if augmented_indices
+        else None,
         query_strategy=chosen_strategy,
         model=model,
         device=device,

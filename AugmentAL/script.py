@@ -72,9 +72,7 @@ def run_script(
         Datasets.ROTTEN.value, augmentation_method
     )
 
-    raw_unaugmented_test, raw_train, _ = create_raw_set(
-        Datasets.ROTTEN.value
-    )
+    raw_unaugmented_test, raw_train, _ = create_raw_set(Datasets.ROTTEN.value)
 
     for query_strategy in query_strategies:
         final_results = {}
