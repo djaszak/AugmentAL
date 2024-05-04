@@ -54,12 +54,9 @@ def run_script(
     except OSError:
         print(f"{path} already exists.")
 
-    if augmentation_method:
-        raw_augmented_test, raw_train, augmented_indices = create_raw_set(
+    raw_test, raw_train, augmented_indices = create_raw_set(
             Datasets.ROTTEN.value, augmentation_method
         )
-
-    raw_unaugmented_test, raw_train, _ = create_raw_set(Datasets.ROTTEN.value)
 
     query_strategies = (
         [
@@ -81,9 +78,6 @@ def run_script(
 
     for query_strategy in query_strategies:
         final_results = {}
-        raw_test = (
-            raw_unaugmented_test if augmentation_method is None else raw_augmented_test
-        )
 
         for rep in range(repetitions):
             results = run_active_learning_loop(
