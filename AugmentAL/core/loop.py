@@ -33,7 +33,10 @@ def run_active_learning_loop(
     device: str = "",
 ) -> (dict, str):
     num_classes = raw_train.features["label"].num_classes
-    stopping_criterion = KappaAverage(num_classes, kappa=0.8)
+    # Use the default KappaAverage parameters that follow
+    # the results from the original paper.
+    # kappa=0.9 and window_size=3
+    stopping_criterion = KappaAverage(num_classes)
 
     average_across_augmented_strategy = AverageAcrossAugmentedQueryStrategy(
         base_strategy=base_strategy, augmented_indices=augmented_indices
