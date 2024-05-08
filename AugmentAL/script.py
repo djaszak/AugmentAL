@@ -55,8 +55,8 @@ def run_script(
         print(f"{path} already exists.")
 
     raw_test, raw_train, augmented_indices = create_raw_set(
-            Datasets.ROTTEN.value, augmentation_method
-        )
+        Datasets.ROTTEN.value, augmentation_method
+    )
 
     query_strategies = (
         [
