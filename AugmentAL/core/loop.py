@@ -164,17 +164,17 @@ def run_active_learning_loop(
         kappa_average_middle_ground_history.append(kappa_average_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
         kappa_average_aggressive_history.append(kappa_average_aggressive.stop(predictions=active_learner.classifier.predict(train)))
         
-        kappa_average_conservative_history.append(kappa_average_conservative.stop(predictions=active_learner.classifier.predict(train)))
-        kappa_average_middle_ground_history.append(kappa_average_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
-        kappa_average_aggressive_history.append(kappa_average_aggressive.stop(predictions=active_learner.classifier.predict(train)))
+        delta_f_score_conservative_history.append(delta_f_score_conservative.stop(predictions=active_learner.classifier.predict(train)))
+        delta_f_score_middle_ground_history.append(delta_f_score_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
+        delta_f_score_aggressive_history.append(delta_f_score_aggressive.stop(predictions=active_learner.classifier.predict(train)))
 
-        kappa_average_conservative_history.append(kappa_average_conservative.stop(predictions=active_learner.classifier.predict(train)))
-        kappa_average_middle_ground_history.append(kappa_average_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
-        kappa_average_aggressive_history.append(kappa_average_aggressive.stop(predictions=active_learner.classifier.predict(train)))
+        classification_change_conservative_history.append(classification_change_conservative.stop(predictions=active_learner.classifier.predict(train)))
+        classification_change_middle_ground_history.append(classification_change_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
+        classification_change_aggressive_history.append(classification_change_aggressive.stop(predictions=active_learner.classifier.predict(train)))
 
-        kappa_average_conservative_history.append(kappa_average_conservative.stop(predictions=active_learner.classifier.predict(train)))
-        kappa_average_middle_ground_history.append(kappa_average_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
-        kappa_average_aggressive_history.append(kappa_average_aggressive.stop(predictions=active_learner.classifier.predict(train)))
+        overall_uncertainty_conservative_history.append(overall_uncertainty_conservative.stop(predictions=active_learner.classifier.predict(train)))
+        overall_uncertainty_middle_ground_history.append(overall_uncertainty_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
+        overall_uncertainty_aggressive_history.append(overall_uncertainty_aggressive.stop(predictions=active_learner.classifier.predict(train)))
         # Write indices_queried to a txt file after every third iteration
         if (i + 1) % 3 == 0:
             with open(
@@ -191,6 +191,18 @@ def run_active_learning_loop(
         "iterations": iterations,
         "test_accuracies": test_accuracies,
         "train_accuracies": train_accuracies,
+        "kappa_average_conservative_history": kappa_average_conservative_history,
+        "kappa_average_middle_ground_history": kappa_average_middle_ground_history,
+        "kappa_average_aggressive_history": kappa_average_aggressive_history,
+        "delta_f_score_conservative_history": delta_f_score_conservative_history,
+        "delta_f_score_middle_ground_history": delta_f_score_middle_ground_history,
+        "delta_f_score_aggressive_history": delta_f_score_aggressive_history,
+        "classification_change_conservative_history": classification_change_conservative_history,
+        "classification_change_middle_ground_history": classification_change_middle_ground_history,
+        "classification_change_aggressive_history": classification_change_aggressive_history,
+        "overall_uncertainty_conservative_history": overall_uncertainty_conservative_history,
+        "overall_uncertainty_middle_ground_history": overall_uncertainty_middle_ground_history,
+        "overall_uncertainty_aggressive_history": overall_uncertainty_aggressive_history,
         # "stopping_history": stopping_history,
     }
 
