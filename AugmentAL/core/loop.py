@@ -59,7 +59,9 @@ def run_active_learning_loop(
 
     # Classification Change
     classification_change_conservative = ClassificationChange(num_classes)
-    classification_change_middle_ground = ClassificationChange(num_classes, threshold=0.04)
+    classification_change_middle_ground = ClassificationChange(
+        num_classes, threshold=0.04
+    )
     classification_change_aggressive = ClassificationChange(num_classes, threshold=0.09)
 
     # Overall Uncertainty
@@ -123,7 +125,7 @@ def run_active_learning_loop(
     classification_change_conservative_history = []
     classification_change_middle_ground_history = []
     classification_change_aggressive_history = []
-    
+
     overall_uncertainty_conservative_history = []
     overall_uncertainty_middle_ground_history = []
     overall_uncertainty_aggressive_history = []
@@ -160,22 +162,70 @@ def run_active_learning_loop(
         # )
         # print(f"Stop: {stopping_criterion_response}")
         # stopping_history.append(stopping_criterion_response)
-        
-        kappa_average_conservative_history.append(kappa_average_conservative.stop(predictions=active_learner.classifier.predict(train)))
-        kappa_average_middle_ground_history.append(kappa_average_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
-        kappa_average_aggressive_history.append(kappa_average_aggressive.stop(predictions=active_learner.classifier.predict(train)))
-        
-        delta_f_score_conservative_history.append(delta_f_score_conservative.stop(predictions=active_learner.classifier.predict(train)))
-        delta_f_score_middle_ground_history.append(delta_f_score_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
-        delta_f_score_aggressive_history.append(delta_f_score_aggressive.stop(predictions=active_learner.classifier.predict(train)))
 
-        classification_change_conservative_history.append(classification_change_conservative.stop(predictions=active_learner.classifier.predict(train)))
-        classification_change_middle_ground_history.append(classification_change_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
-        classification_change_aggressive_history.append(classification_change_aggressive.stop(predictions=active_learner.classifier.predict(train)))
+        kappa_average_conservative_history.append(
+            kappa_average_conservative.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
+        kappa_average_middle_ground_history.append(
+            kappa_average_middle_ground.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
+        kappa_average_aggressive_history.append(
+            kappa_average_aggressive.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
 
-        overall_uncertainty_conservative_history.append(overall_uncertainty_conservative.stop(predictions=active_learner.classifier.predict(train)))
-        overall_uncertainty_middle_ground_history.append(overall_uncertainty_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
-        overall_uncertainty_aggressive_history.append(overall_uncertainty_aggressive.stop(predictions=active_learner.classifier.predict(train)))
+        delta_f_score_conservative_history.append(
+            delta_f_score_conservative.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
+        delta_f_score_middle_ground_history.append(
+            delta_f_score_middle_ground.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
+        delta_f_score_aggressive_history.append(
+            delta_f_score_aggressive.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
+
+        classification_change_conservative_history.append(
+            classification_change_conservative.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
+        classification_change_middle_ground_history.append(
+            classification_change_middle_ground.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
+        classification_change_aggressive_history.append(
+            classification_change_aggressive.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
+
+        overall_uncertainty_conservative_history.append(
+            overall_uncertainty_conservative.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
+        overall_uncertainty_middle_ground_history.append(
+            overall_uncertainty_middle_ground.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
+        overall_uncertainty_aggressive_history.append(
+            overall_uncertainty_aggressive.stop(
+                predictions=active_learner.classifier.predict(train)
+            )
+        )
         # Write indices_queried to a txt file after every third iteration
         if (i + 1) % 3 == 0:
             with open(

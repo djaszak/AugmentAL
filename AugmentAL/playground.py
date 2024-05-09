@@ -15,9 +15,9 @@ from datasets import load_dataset
 # for key, value in augmented_indices.items():
 #     print(raw_train[key], "\n")
 #     for x in value:
-#         print(raw_train[x], "\n") 
+#         print(raw_train[x], "\n")
 
-text = 'The quick brown fox jumps over the lazy dog.'
+text = "The quick brown fox jumps over the lazy dog."
 
 # print(f"Bart Substitute: {AugmentationMethods.BART_SUBSTITUTE.value.augment(text)}")
 # print(f"Bert Substitute: {AugmentationMethods.BERT_SUBSTITUTE.value.augment(text)}")
@@ -37,4 +37,6 @@ text = 'The quick brown fox jumps over the lazy dog.'
 
 for x in range(5):
     print(f"GPT2: {AugmentationMethods.GENERATIVE_GPT2.value.augment(text)}")
-    print(f"DISTILLGPT2: {AugmentationMethods.GENERATIVE_DISTILGPT2.value.augment(text)}") 
+    print(
+        f"DISTILLGPT2: {AugmentationMethods.GENERATIVE_DISTILGPT2.value.augment(text)}"
+    )

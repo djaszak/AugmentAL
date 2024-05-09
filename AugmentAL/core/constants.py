@@ -30,7 +30,7 @@ class AugmentationMethods(Enum):
         device="cuda",
     )
     BERT_SUBSTITUTE = naw.ContextualWordEmbsAug(
-       model_path='bert-base-uncased', action="substitute"
+        model_path="bert-base-uncased", action="substitute"
     )
     BACK_TRANSLATION = naw.BackTranslationAug(
         from_model_name="facebook/wmt19-en-de",
