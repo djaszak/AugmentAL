@@ -12,7 +12,15 @@ from core.query_strategies import (
     AugmentedSearchSpaceExtensionQueryStrategy,
     AverageAcrossAugmentedQueryStrategy,
 )
-from small_text import BreakingTies, QueryStrategy, KappaAverage, RandomSampling
+from small_text import (
+    BreakingTies,
+    QueryStrategy,
+    KappaAverage,
+    RandomSampling,
+    OverallUncertainty,
+    DeltaFScore,
+    ClassificationChange,
+)
 
 # CONSTANTS
 SEED = 2022
@@ -33,10 +41,31 @@ def run_active_learning_loop(
     device: str = "",
 ) -> (dict, str):
     num_classes = raw_train.features["label"].num_classes
-    # Use the default KappaAverage parameters that follow
-    # the results from the original paper.
-    # kappa=0.9 and window_size=3
-    stopping_criterion = KappaAverage(num_classes)
+    # Define different stopping criteria, 4 ones are given by small-text
+    # Every criterion will be configured in three variants
+    # Conservative, which will be the default one
+    # Middle ground, which will be a bit more aggressive
+    # Aggressive, which will be the most aggressive one
+
+    # Kappa Average
+    kappa_average_conservative = KappaAverage(num_classes)
+    kappa_average_middle_ground = KappaAverage(num_classes, kappa=0.9)
+    kappa_average_aggressive = KappaAverage(num_classes, kappa=0.8)
+
+    # Delta F-Score
+    delta_f_score_conservative = DeltaFScore(num_classes)
+    delta_f_score_middle_ground = DeltaFScore(num_classes, threshold=0.04)
+    delta_f_score_aggressive = DeltaFScore(num_classes, threshold=0.09)
+
+    # Classification Change
+    classification_change_conservative = ClassificationChange(num_classes)
+    classification_change_middle_ground = ClassificationChange(num_classes, threshold=0.04)
+    classification_change_aggressive = ClassificationChange(num_classes, threshold=0.09)
+
+    # Overall Uncertainty
+    overall_uncertainty_conservative = OverallUncertainty(num_classes)
+    overall_uncertainty_middle_ground = OverallUncertainty(num_classes, threshold=0.04)
+    overall_uncertainty_aggressive = OverallUncertainty(num_classes, threshold=0.09)
 
     average_across_augmented_strategy = AverageAcrossAugmentedQueryStrategy(
         base_strategy=base_strategy, augmented_indices=augmented_indices
@@ -83,13 +112,24 @@ def run_active_learning_loop(
     train_results = []
     stopping_history = []
     samples_count = [len(indices_labeled)]
+    kappa_average_conservative_history = []
+    kappa_average_middle_ground_history = []
+    kappa_average_aggressive_history = []
+
+    delta_f_score_conservative_history = []
+    delta_f_score_middle_ground_history = []
+    delta_f_score_aggressive_history = []
+
+    classification_change_conservative_history = []
+    classification_change_middle_ground_history = []
+    classification_change_aggressive_history = []
+    
+    overall_uncertainty_conservative_history = []
+    overall_uncertainty_middle_ground_history = []
+    overall_uncertainty_aggressive_history = []
 
     train_results.append(evaluate(active_learner, train[indices_labeled], test)[0])
     test_results.append(evaluate(active_learner, train[indices_labeled], test)[1])
-
-    stopping_history.append(
-        stopping_criterion.stop(predictions=active_learner.classifier.predict(train))
-    )
 
     for i in range(num_queries):
         # ...where each iteration consists of labelling 20 samples
@@ -115,12 +155,27 @@ def run_active_learning_loop(
         train_results.append(evaluate(active_learner, train[indices_labeled], test)[0])
         test_results.append(evaluate(active_learner, train[indices_labeled], test)[1])
 
-        stopping_criterion_response = stopping_criterion.stop(
-            predictions=active_learner.classifier.predict(train)
-        )
-        print(f"Stop: {stopping_criterion_response}")
-        stopping_history.append(stopping_criterion_response)
+        # stopping_criterion_response = stopping_criterion.stop(
+        #     predictions=active_learner.classifier.predict(train)
+        # )
+        # print(f"Stop: {stopping_criterion_response}")
+        # stopping_history.append(stopping_criterion_response)
+        
+        kappa_average_conservative_history.append(kappa_average_conservative.stop(predictions=active_learner.classifier.predict(train)))
+        kappa_average_middle_ground_history.append(kappa_average_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
+        kappa_average_aggressive_history.append(kappa_average_aggressive.stop(predictions=active_learner.classifier.predict(train)))
+        
+        delta_f_score_conservative_history.append(delta_f_score_conservative.stop(predictions=active_learner.classifier.predict(train)))
+        delta_f_score_middle_ground_history.append(delta_f_score_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
+        delta_f_score_aggressive_history.append(delta_f_score_aggressive.stop(predictions=active_learner.classifier.predict(train)))
 
+        classification_change_conservative_history.append(classification_change_conservative.stop(predictions=active_learner.classifier.predict(train)))
+        classification_change_middle_ground_history.append(classification_change_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
+        classification_change_aggressive_history.append(classification_change_aggressive.stop(predictions=active_learner.classifier.predict(train)))
+
+        overall_uncertainty_conservative_history.append(overall_uncertainty_conservative.stop(predictions=active_learner.classifier.predict(train)))
+        overall_uncertainty_middle_ground_history.append(overall_uncertainty_middle_ground.stop(predictions=active_learner.classifier.predict(train)))
+        overall_uncertainty_aggressive_history.append(overall_uncertainty_aggressive.stop(predictions=active_learner.classifier.predict(train)))
         # Write indices_queried to a txt file after every third iteration
         if (i + 1) % 3 == 0:
             with open(
@@ -137,7 +192,19 @@ def run_active_learning_loop(
         "iterations": iterations,
         "test_accuracies": test_accuracies,
         "train_accuracies": train_accuracies,
-        "stopping_history": stopping_history,
+        "kappa_average_conservative_history": kappa_average_conservative_history,
+        "kappa_average_middle_ground_history": kappa_average_middle_ground_history,
+        "kappa_average_aggressive_history": kappa_average_aggressive_history,
+        "delta_f_score_conservative_history": delta_f_score_conservative_history,
+        "delta_f_score_middle_ground_history": delta_f_score_middle_ground_history,
+        "delta_f_score_aggressive_history": delta_f_score_aggressive_history,
+        "classification_change_conservative_history": classification_change_conservative_history,
+        "classification_change_middle_ground_history": classification_change_middle_ground_history,
+        "classification_change_aggressive_history": classification_change_aggressive_history,
+        "overall_uncertainty_conservative_history": overall_uncertainty_conservative_history,
+        "overall_uncertainty_middle_ground_history": overall_uncertainty_middle_ground_history,
+        "overall_uncertainty_aggressive_history": overall_uncertainty_aggressive_history,
+        # "stopping_history": stopping_history,
         "samples_count": samples_count,
     }
 
