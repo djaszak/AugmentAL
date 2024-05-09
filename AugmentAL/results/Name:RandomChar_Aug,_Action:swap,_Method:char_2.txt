@@ -1,0 +1,2 @@
+{'text': 'the rock is destined to be the 21st century\'s new " conan " and that he\'s going to make a splash even greater than arnold schwarzenegger , jean-claud van damme or steven segal .', 'label': 1}
+{'text': 'the rock is destined to be the 21st century \' s new " ncoan " and that he \' s going to kmae a splash vene graeert than arnold scharwzenggere, eajn - claud van dmmae or steven esgla.', 'label': 1}

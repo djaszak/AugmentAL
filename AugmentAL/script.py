@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 
+from datetime import datetime
 from pathlib import Path
 
 from core.augment import create_augmented_dataset
@@ -44,6 +45,8 @@ def create_raw_set(
 def run_script(
     augmentation_method: AugmentationMethods | None = None, repetitions: int = 5
 ):
+    start_time = datetime.now()
+    print(f"Starting run at {start_time}. \n")
     path = (
         Path(__file__).parent / "results" / str(augmentation_method).replace(" ", "_")
     ).resolve()
@@ -100,3 +103,7 @@ def run_script(
 
             with open((path / saving_name).resolve(), "w") as f:
                 f.write(pd.DataFrame(final_results).to_json())
+
+    end_time = datetime.now()
+    print(f"Finished run at {end_time}. \n")
+    print(f"Run took {end_time - start_time}. \n")

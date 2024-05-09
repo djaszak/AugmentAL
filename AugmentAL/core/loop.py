@@ -82,6 +82,7 @@ def run_active_learning_loop(
     test_results = []
     train_results = []
     stopping_history = []
+    samples_count = [len(indices_labeled)]
 
     train_results.append(evaluate(active_learner, train[indices_labeled], test)[0])
     test_results.append(evaluate(active_learner, train[indices_labeled], test)[1])
@@ -137,6 +138,7 @@ def run_active_learning_loop(
         "test_accuracies": test_accuracies,
         "train_accuracies": train_accuracies,
         "stopping_history": stopping_history,
+        "samples_count": samples_count,
     }
 
     details_str = f"{query_strategy}_{base_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}"
