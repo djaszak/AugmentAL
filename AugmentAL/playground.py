@@ -36,7 +36,4 @@ text = "The quick brown fox jumps over the lazy dog."
 # )
 
 for x in range(5):
-    print(f"GPT2: {AugmentationMethods.GENERATIVE_GPT2.value.augment(text)}")
-    print(
-        f"DISTILLGPT2: {AugmentationMethods.GENERATIVE_DISTILGPT2.value.augment(text)}"
-    )
+    print(f"random swap: {AugmentationMethods.RANDOM_SWAP.value.augment(text)}")

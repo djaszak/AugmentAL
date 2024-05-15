@@ -10,11 +10,10 @@ from core.loop import run_active_learning_loop
 from datasets import load_dataset
 
 
-datasets = [Datasets.ROTTEN.value]
-
 num_queries = 50
 num_samples = 20
 num_augmentations = 5
+chosen_dataset = Datasets.IMDB.value
 
 
 def create_raw_set(
@@ -58,7 +57,7 @@ def run_script(
         print(f"{path} already exists.")
 
     raw_test, raw_train, augmented_indices = create_raw_set(
-        Datasets.ROTTEN.value, augmentation_method
+        chosen_dataset, augmentation_method
     )
 
     query_strategies = (

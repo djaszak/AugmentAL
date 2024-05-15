@@ -1,3 +1,4 @@
+from datetime import datetime
 import numpy as np
 from pathlib import Path
 from core.core import (
@@ -109,7 +110,7 @@ def run_active_learning_loop(
         model=model,
         device=device,
     )
-
+    indices_train = [x for x in range(raw_train.num_rows)]
     test_results = []
     train_results = []
     stopping_history = []
@@ -163,6 +164,8 @@ def run_active_learning_loop(
         # print(f"Stop: {stopping_criterion_response}")
         # stopping_history.append(stopping_criterion_response)
 
+        stopping_criteria_start = datetime.now()
+        print(f"Evaluating stopping criteria, starting at {stopping_criteria_start} \n")
         kappa_average_conservative_history.append(
             kappa_average_conservative.stop(
                 predictions=active_learner.classifier.predict(train)
@@ -211,21 +214,28 @@ def run_active_learning_loop(
             )
         )
 
-        overall_uncertainty_conservative_history.append(
-            overall_uncertainty_conservative.stop(
-                predictions=active_learner.classifier.predict(train)
-            )
-        )
-        overall_uncertainty_middle_ground_history.append(
-            overall_uncertainty_middle_ground.stop(
-                predictions=active_learner.classifier.predict(train)
-            )
-        )
-        overall_uncertainty_aggressive_history.append(
-            overall_uncertainty_aggressive.stop(
-                predictions=active_learner.classifier.predict(train)
-            )
-        )
+        # indices_stopping = list(set(indices_train) - set(indices_labeled))
+        # overall_uncertainty_conservative_history.append(
+        #     overall_uncertainty_conservative.stop(
+        #         predictions=active_learner.classifier.predict(train),
+        #         indices_stopping=indices_stopping
+        #     )
+        # )
+        # overall_uncertainty_middle_ground_history.append(
+        #     overall_uncertainty_middle_ground.stop(
+        #         predictions=active_learner.classifier.predict(train),
+        #         indices_stopping=indices_stopping
+        #     )
+        # )
+        # overall_uncertainty_aggressive_history.append(
+        #     overall_uncertainty_aggressive.stop(
+        #         predictions=active_learner.classifier.predict(train),
+        #         indices_stopping=indices_stopping
+        #     )
+        # )
+        stopping_criteria_end = datetime.now()
+        print(f"Finished evaluation stopping criteria at {stopping_criteria_end} \n")
+        print(f"Evaluation took {stopping_criteria_end - stopping_criteria_start} \n")
         # Write indices_queried to a txt file after every third iteration
         if (i + 1) % 3 == 0:
             with open(
@@ -251,9 +261,9 @@ def run_active_learning_loop(
         "classification_change_conservative_history": classification_change_conservative_history,
         "classification_change_middle_ground_history": classification_change_middle_ground_history,
         "classification_change_aggressive_history": classification_change_aggressive_history,
-        "overall_uncertainty_conservative_history": overall_uncertainty_conservative_history,
-        "overall_uncertainty_middle_ground_history": overall_uncertainty_middle_ground_history,
-        "overall_uncertainty_aggressive_history": overall_uncertainty_aggressive_history,
+        # "overall_uncertainty_conservative_history": overall_uncertainty_conservative_history,
+        # "overall_uncertainty_middle_ground_history": overall_uncertainty_middle_ground_history,
+        # "overall_uncertainty_aggressive_history": overall_uncertainty_aggressive_history,
         # "stopping_history": stopping_history,
         "samples_count": samples_count,
     }

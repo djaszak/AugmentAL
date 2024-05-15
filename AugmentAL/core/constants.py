@@ -14,6 +14,7 @@ class TransformerModels(Enum):
 
 class Datasets(Enum):
     ROTTEN = "rotten_tomatoes"
+    IMDB = "imdb"
 
 
 class AugmentationMethods(Enum):
