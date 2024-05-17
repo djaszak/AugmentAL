@@ -1,6 +1,10 @@
 from core.augment import create_augmented_dataset
 from core.constants import AugmentationMethods, Datasets
 from datasets import load_dataset
+from script import create_raw_set
+
+dataset = load_dataset(Datasets.IMDB.value)
+# raw_test, raw_train, augmented_indices = create_raw_set(Datasets.ROTTEN.value, AugmentationMethods.RANDOM_SWAP.value)
 
 # dataset = load_dataset(Datasets.ROTTEN.value)
 
