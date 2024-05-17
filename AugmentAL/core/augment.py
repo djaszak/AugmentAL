@@ -1,5 +1,6 @@
 from pathlib import Path
 import multiprocessing
+import json
 
 import datasets
 import nlpaug
@@ -13,7 +14,8 @@ def create_augmented_dataset(
     dataset: datasets.Dataset,
     augmenter,
     feature: str = "text",
-    n=3,
+    n: int = 3,
+    saving_path: str = None,
 ) -> set[datasets.Dataset, dict[int, list[int]]]:
     augmented_indices = {}
 
@@ -45,5 +47,9 @@ def create_augmented_dataset(
                 [f"{augmented_full_set[i]}\n" for i in range(0, num_rows * n, num_rows)]
             )
         )
+
+    augmented_full_set.save_to_disk(saving_path)
+    with open(f"{saving_path}/augmented_indices.json", "w") as f:
+        f.write(json.dump(augmented_indices))
 
     return augmented_full_set, augmented_indices
