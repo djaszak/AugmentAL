@@ -16,11 +16,11 @@ num_samples = 20
 num_augmentations = 5
 chosen_dataset = Datasets.IMDB.value
 # datasets_path = "/beegfs/ws/1/s8822750-active-learning-data-augmentation/datasets"
-datasets_path = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/datasets"
+# datasets_path = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/datasets"
 
 
 def create_raw_set(
-    dataset_name: str, augmentation_method: AugmentationMethods | None = None
+    dataset_name: str, augmentation_method: AugmentationMethods | None = None, saving_path: str = "/beegfs/ws/1/s8822750-active-learning-data-augmentation/datasets"
 ):
     """If augmentation_method is not None, create an augmented dataset
 
@@ -31,29 +31,27 @@ def create_raw_set(
     Returns:
         tuple(dataset, dataset, dict): Raw sets and augmented indices, if augmentation_method is not None, else just the sets and an empty dict.
     """
+    loaded_dataset = load_dataset(dataset_name)
+    augmented_indices = {}
     if augmentation_method:
         # Try to load a local already augmented dataset if it exists.
-        potential_training_set_path = f"{datasets_path}/{dataset_name}/{augmentation_method}"
-        if os.path.exists(potential_training_set_path):
-            dataset = load_from_disk(potential_training_set_path)
-            augmented_indices = json.load(f"{potential_training_set_path}/augmented_indices.json")
-
-            raw_train = dataset["train"]
-            raw_test = dataset["test"]
+        potential_training_set_path = f"{saving_path}/{dataset_name}/{augmentation_method}"
+        if os.path.exists(potential_training_set_path) and os.listdir(potential_training_set_path):
+            raw_train = load_from_disk(f"{potential_training_set_path}")
+            raw_test = loaded_dataset["test"]
+            print(raw_train, "In loading mode")
+            print(raw_test)
+            with open(f"{potential_training_set_path}/augmented_indices.json", "r") as f:
+                augmented_indices = json.load(f)
         else:
-            dataset = load_dataset(dataset_name)
-
-            raw_train = dataset["train"]
-            raw_test = dataset["test"]
             raw_train, augmented_indices = create_augmented_dataset(
-                raw_train, augmentation_method, n=num_augmentations
+                loaded_dataset["train"], augmentation_method, n=num_augmentations, saving_path=potential_training_set_path 
             )
-    else:
-        augmented_indices = {}
-        dataset = load_dataset(dataset_name)
+            raw_test = loaded_dataset["test"]
 
-        raw_test = dataset["test"]
-        raw_train = dataset["train"]
+    else:
+        raw_test = loaded_dataset["test"]
+        raw_train = loaded_dataset["train"]
     
     return raw_test, raw_train, augmented_indices
 

@@ -17,6 +17,7 @@ def create_augmented_dataset(
     n: int = 3,
     saving_path: str = None,
 ) -> set[datasets.Dataset, dict[int, list[int]]]:
+    print("Starting augmentation")
     augmented_indices = {}
 
     # Because we multiply create augmented sets
@@ -37,6 +38,7 @@ def create_augmented_dataset(
     augmented_sets.insert(0, dataset)
 
     augmented_full_set = concatenate_datasets(augmented_sets)
+    print("Got an augmented full set.")
 
     augmenter_str = str(augmenter).replace(" ", "_")
     file_name = f"{augmenter_str}_{n}.txt"
@@ -48,8 +50,10 @@ def create_augmented_dataset(
             )
         )
 
-    augmented_full_set.save_to_disk(saving_path)
-    with open(f"{saving_path}/augmented_indices.json", "w") as f:
-        f.write(json.dump(augmented_indices))
+    print(f"Trying to save on the saving path {saving_path}.")
+    if saving_path: 
+        augmented_full_set.save_to_disk(saving_path)
+        with open(f"{saving_path}/augmented_indices.json", "w") as f:
+            f.write(json.dumps(augmented_indices))
 
     return augmented_full_set, augmented_indices
