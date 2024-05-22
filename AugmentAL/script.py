@@ -42,7 +42,7 @@ def create_raw_set(
             print(raw_train, "In loading mode")
             print(raw_test)
             with open(f"{potential_training_set_path}/augmented_indices.json", "r") as f:
-                augmented_indices = json.load(f)
+                augmented_indices = {int(k): v for k,v in json.load(f).items()}
         else:
             raw_train, augmented_indices = create_augmented_dataset(
                 loaded_dataset["train"], augmentation_method, n=num_augmentations, saving_path=potential_training_set_path 
@@ -57,7 +57,7 @@ def create_raw_set(
 
 
 def run_script(
-    augmentation_method: AugmentationMethods | None = None, repetitions: int = 5
+    augmentation_method: AugmentationMethods | None = None, repetitions: int = 5, query_strategies: list = []
 ):
     start_time = datetime.now()
     print(f"Starting run at {start_time}. \n")
@@ -74,29 +74,37 @@ def run_script(
     raw_test, raw_train, augmented_indices = create_raw_set(
         chosen_dataset, augmentation_method
     )
-
-    query_strategies = (
-        [
-            # Basic Augmented Strategies
-            "AugmentedSearchSpaceExtensionQueryStrategy",
-            "AugmentedOutcomesQueryStrategy",
-            "AverageAcrossAugmentedQueryStrategy",
-            # Combinations
-            "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
-            "AverageAcrossAugmentedExtendedOutcomesQueryStrategy",
-        ]
-        if augmentation_method
-        else [
-            # Basic Strategies
-            "RandomSampling",
-            "BreakingTies",
-        ]
+    if not query_strategies:
+        query_strategies = (
+            [
+                # Basic Augmented Strategies
+                "AugmentedSearchSpaceExtensionQueryStrategy",
+                "AugmentedOutcomesQueryStrategy",
+                "AverageAcrossAugmentedQueryStrategy",
+                # Combinations
+                "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy",
+                "AverageAcrossAugmentedExtendedOutcomesQueryStrategy",
+            ]
+            if augmentation_method
+            else [
+                # Basic Strategies
+                "RandomSampling",
+                "BreakingTies",
+            ]
     )
+
+    
 
     for query_strategy in query_strategies:
         final_results = {}
 
         for rep in range(repetitions):
+            saving_name = f"{query_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.json"
+            try:
+                with open((path / saving_name).resolve(), "r") as f:
+                    actual_repetition = [int(k) for k in json.load(f).keys].sort()[-1] + 1
+            except FileNotFoundError:
+                actual_repetition = rep
             results = run_active_learning_loop(
                 raw_test,
                 raw_train,
@@ -112,8 +120,7 @@ def run_script(
                 device="cuda",
             )
 
-            final_results[rep] = results
-            saving_name = f"{query_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.json"
+            final_results[actual_repetition] = results
 
             with open((path / saving_name).resolve(), "w") as f:
                 f.write(pd.DataFrame(final_results).to_json())
