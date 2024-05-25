@@ -15,6 +15,8 @@ class TransformerModels(Enum):
 class Datasets(Enum):
     ROTTEN = "rotten_tomatoes"
     IMDB = "imdb"
+    AG_NEWS = "fancyzhx/ag_news"
+    TWEET = "tweet_eval"
 
 
 class AugmentationMethods(Enum):
@@ -31,12 +33,14 @@ class AugmentationMethods(Enum):
         device="cuda",
     )
     BERT_SUBSTITUTE = naw.ContextualWordEmbsAug(
-        model_path="bert-base-uncased", action="substitute"
+        model_path="bert-base-uncased", action="substitute",
+        # force_reload=True,
     )
     BACK_TRANSLATION = naw.BackTranslationAug(
         from_model_name="facebook/wmt19-en-de",
         to_model_name="facebook/wmt19-de-en",
         device="cuda",
+        # force_reload=True,
     )
     GENERATIVE_GPT2 = nas.ContextualWordEmbsForSentenceAug(
         model_path="gpt2", device="cuda"

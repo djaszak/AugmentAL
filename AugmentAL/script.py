@@ -9,6 +9,19 @@ from core.augment import create_augmented_dataset
 from core.constants import AugmentationMethods, Datasets, TransformerModels
 from core.loop import run_active_learning_loop
 from datasets import load_dataset, load_from_disk
+from torch.multiprocessing import set_start_method
+import multiprocessing as mp
+
+# mp.set_start_method('spawn')
+# print("START METHOD WAS SET WITH MP LIB")
+
+
+# try:
+#     print("SETTING START METHOD") 
+#     set_start_method('spawn', force=True)
+#     print("START METHOD SET")
+# except RuntimeError as e:
+#     print(f"START METHOD SETTIN DID NOT WORK WITH ERROR {e}")
 
 
 num_queries = 50
@@ -31,7 +44,10 @@ def create_raw_set(
     Returns:
         tuple(dataset, dataset, dict): Raw sets and augmented indices, if augmentation_method is not None, else just the sets and an empty dict.
     """
-    loaded_dataset = load_dataset(dataset_name)
+    if "tweet" in dataset_name:
+        loaded_dataset = load_dataset(dataset_name, "irony")
+    else:
+        loaded_dataset = load_dataset(dataset_name)
     augmented_indices = {}
     if augmentation_method:
         # Try to load a local already augmented dataset if it exists.
@@ -57,12 +73,12 @@ def create_raw_set(
 
 
 def run_script(
-    augmentation_method: AugmentationMethods | None = None, repetitions: int = 5, query_strategies: list = []
+    augmentation_method: AugmentationMethods | None = None, repetitions: int = 5, query_strategies: list = [], dataset: str = Datasets.IMDB.value
 ):
     start_time = datetime.now()
     print(f"Starting run at {start_time}. \n")
     path = (
-        Path(__file__).parent / "results" / str(augmentation_method).replace(" ", "_")
+        Path(__file__).parent / "results" / str(augmentation_method).replace(" ", "_") / dataset
     ).resolve()
 
     try:
@@ -72,7 +88,7 @@ def run_script(
         print(f"{path} already exists.")
 
     raw_test, raw_train, augmented_indices = create_raw_set(
-        chosen_dataset, augmentation_method
+        dataset, augmentation_method
     )
     if not query_strategies:
         query_strategies = (
@@ -102,7 +118,14 @@ def run_script(
             saving_name = f"{query_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.json"
             try:
                 with open((path / saving_name).resolve(), "r") as f:
-                    actual_repetition = [int(k) for k in json.load(f).keys].sort()[-1] + 1
+                    try:
+                        loaded_json = json.load(f).items()
+                        final_results = {int(k): v for k, v in loaded_json}
+                        keys = [int(k) for k in final_results.keys()]
+                        keys.sort()
+                        actual_repetition = keys[-1] + 1
+                    except json.decoder.JSONDecodeError:
+                        actual_repetition = rep
             except FileNotFoundError:
                 actual_repetition = rep
             results = run_active_learning_loop(
@@ -120,7 +143,8 @@ def run_script(
                 device="cuda",
             )
 
-            final_results[actual_repetition] = results
+            final_results[actual_repetition] = {"0": results[0],
+                                                "1": results[1] }
 
             with open((path / saving_name).resolve(), "w") as f:
                 f.write(pd.DataFrame(final_results).to_json())

@@ -8,3 +8,5 @@
 {'text': 'the rock is destined to embody the 21st one c \' s new " conan " and that atomic number 2 \' s run to make a plash even neat than arnold schwarzenegger, jean - claud van damme surgery steven george segal.', 'label': 1}
 {'text': 'the rock is destined to be the 21st century\'s new " conan " and that he\'s going to make a splash even greater than arnold schwarzenegger , jean-claud van damme or steven segal .', 'label': 1}
 {'text': 'the sway comprise designate to be the 21st century \' s new " conan " and that he \' s go to wee a splash even great than arnold schwarzenegger, jean - claud van damme or steven segal.', 'label': 1}
+{'text': "Wall St. Bears Claw Back Into the Black (Reuters) Reuters - Short-sellers, Wall Street's dwindling\\band of ultra-cynics, are seeing green again.", 'label': 2}
+{'text': "Bulwark St. Bears Pincer Back Into the Black (Reuters) Reuters - Shortstop - sellers, Paries Street ' entropy dwindle away \\ band of extremist - cynics, are seeing unripened again.", 'label': 2}

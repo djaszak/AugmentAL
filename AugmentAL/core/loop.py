@@ -55,7 +55,7 @@ def run_active_learning_loop(
 
     # Delta F-Score
     delta_f_score_conservative = DeltaFScore(num_classes)
-    delta_f_score_middle_ground = DeltaFScore(num_classes, threshold=0.04)
+    delta_f_score_middle_ground = DeltaFScore(num_classes, threshold=0.07)
     delta_f_score_aggressive = DeltaFScore(num_classes, threshold=0.09)
 
     # Classification Change
@@ -214,6 +214,7 @@ def run_active_learning_loop(
             )
         )
 
+        # THIS WONT BE USED ANYMORE I THINK
         # indices_stopping = list(set(indices_train) - set(indices_labeled))
         # overall_uncertainty_conservative_history.append(
         #     overall_uncertainty_conservative.stop(
