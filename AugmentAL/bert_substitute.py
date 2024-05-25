@@ -1,5 +1,8 @@
-from core.constants import AugmentationMethods
+from core.constants import AugmentationMethods, Datasets
 from script import run_script
 
-run_script(AugmentationMethods.BERT_SUBSTITUTE.value, query_strategies=["AugmentedOutcomesQueryStrategy",
-                "AverageAcrossAugmentedQueryStrategy",])
+run_script(
+    AugmentationMethods.BERT_SUBSTITUTE.value,
+    query_strategies=["AugmentedSearchSpaceExtensionQueryStrategy",],
+    dataset=Datasets.IMDB.value
+)
