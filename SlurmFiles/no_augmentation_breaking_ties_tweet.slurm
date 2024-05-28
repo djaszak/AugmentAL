@@ -17,4 +17,4 @@ module load Python/3.10.8
 
 source /beegfs/ws/1/s8822750-active-learning-data-augmentation/active-learning-venv/bin/activate
 
-srun python /home/s8822750/AugmentAL/AugmentAL/no_augmentation.py
+srun python /home/s8822750/AugmentAL/AugmentAL/no_augmentation_breaking_ties_tweet.py

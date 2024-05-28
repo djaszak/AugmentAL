@@ -13,3 +13,8 @@
 {'text': 'seeing that walking it / her makes me immensely happy for the coming 3 weeks of my job', 'label': 1}
 {'text': 'seeing that walking it / her makes me immensely happy for the coming 3 weeks of my job', 'label': 1}
 {'text': 'seeing that walking it / her makes me immensely happy for the coming 3 weeks of my job', 'label': 1}
+{'text': "Wall St. Bears Claw Back Into the Black (Reuters) Reuters - Short-sellers, Wall Street's dwindling\\band of ultra-cynics, are seeing green again.", 'label': 2}
+{'text': "and st. greene are back into the black ( reuters ) reuters - short - sellers, wall santo's price \\ rise in down - highs, are going green again.", 'label': 2}
+{'text': "and st. greene are back into the black ( reuters ) reuters - short - sellers, wall santo's price \\ rise in down - highs, are going green again.", 'label': 2}
+{'text': "and st. greene are back into the black ( reuters ) reuters - short - sellers, wall santo's price \\ rise in down - highs, are going green again.", 'label': 2}
+{'text': "and st. greene are back into the black ( reuters ) reuters - short - sellers, wall santo's price \\ rise in down - highs, are going green again.", 'label': 2}

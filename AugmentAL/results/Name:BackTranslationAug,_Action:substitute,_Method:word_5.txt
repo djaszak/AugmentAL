@@ -13,3 +13,8 @@
 {'text': 'Seeing ppl walking with crutches makes me really excited for the next 3 weeks of my life', 'label': 1}
 {'text': 'Seeing ppl walking with crutches makes me really excited for the next 3 weeks of my life', 'label': 1}
 {'text': 'Seeing ppl walking with crutches makes me really excited for the next 3 weeks of my life', 'label': 1}
+{'text': "Wall St. Bears Claw Back Into the Black (Reuters) Reuters - Short-sellers, Wall Street's dwindling\\band of ultra-cynics, are seeing green again.", 'label': 2}
+{'text': 'Wall St. Bears Claw Back Into the Black (Reuters) - Short sellers, the dwindling group of ultra-cynics on Wall Street, are seeing green again.', 'label': 2}
+{'text': 'Wall St. Bears Claw Back Into the Black (Reuters) - Short sellers, the dwindling group of ultra-cynics on Wall Street, are seeing green again.', 'label': 2}
+{'text': 'Wall St. Bears Claw Back Into the Black (Reuters) - Short sellers, the dwindling group of ultra-cynics on Wall Street, are seeing green again.', 'label': 2}
+{'text': 'Wall St. Bears Claw Back Into the Black (Reuters) - Short sellers, the dwindling group of ultra-cynics on Wall Street, are seeing green again.', 'label': 2}

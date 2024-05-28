@@ -54,9 +54,14 @@ def run_active_learning_loop(
     kappa_average_aggressive = KappaAverage(num_classes, kappa=0.8)
 
     # Delta F-Score
-    delta_f_score_conservative = DeltaFScore(num_classes)
-    delta_f_score_middle_ground = DeltaFScore(num_classes, threshold=0.07)
-    delta_f_score_aggressive = DeltaFScore(num_classes, threshold=0.09)
+    if num_classes is 2:
+        delta_f_score_conservative = DeltaFScore(num_classes)
+        delta_f_score_middle_ground = DeltaFScore(num_classes, threshold=0.07)
+        delta_f_score_aggressive = DeltaFScore(num_classes, threshold=0.09)
+    else:
+        delta_f_score_conservative = None
+        delta_f_score_middle_ground = None
+        delta_f_score_aggressive = None
 
     # Classification Change
     classification_change_conservative = ClassificationChange(num_classes)
@@ -181,22 +186,30 @@ def run_active_learning_loop(
                 predictions=active_learner.classifier.predict(train)
             )
         )
-
-        delta_f_score_conservative_history.append(
-            delta_f_score_conservative.stop(
-                predictions=active_learner.classifier.predict(train)
+        if delta_f_score_conservative:
+            delta_f_score_conservative_history.append(
+                delta_f_score_conservative.stop(
+                    predictions=active_learner.classifier.predict(train)
+                )
             )
-        )
-        delta_f_score_middle_ground_history.append(
-            delta_f_score_middle_ground.stop(
-                predictions=active_learner.classifier.predict(train)
+        else:
+           delta_f_score_conservative_history.append(False) 
+        if delta_f_score_middle_ground:
+            delta_f_score_middle_ground_history.append(
+                delta_f_score_middle_ground.stop(
+                    predictions=active_learner.classifier.predict(train)
+                )
             )
-        )
-        delta_f_score_aggressive_history.append(
-            delta_f_score_aggressive.stop(
-                predictions=active_learner.classifier.predict(train)
+        else:
+           delta_f_score_middle_ground_history.append(False)
+        if delta_f_score_aggressive:
+            delta_f_score_aggressive_history.append(
+                delta_f_score_aggressive.stop(
+                    predictions=active_learner.classifier.predict(train)
+                )
             )
-        )
+        else:
+           delta_f_score_aggressive_history.append(False)
 
         classification_change_conservative_history.append(
             classification_change_conservative.stop(
