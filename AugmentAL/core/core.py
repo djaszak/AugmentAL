@@ -95,6 +95,7 @@ def create_active_learner(
     # clf_factory = SetFitClassificationFactory(setfit_model_args, num_classes)
     # Code for Transformer
     transformer_model = TransformerModelArguments(model)
+#   kwargs = {"mini_batch_size": 32, "class_weight": None} -> This would have been the paper implementation. 
     kwargs = {"mini_batch_size": 32, "class_weight": "balanced"}
     if device:
         kwargs["device"] = device
