@@ -111,15 +111,15 @@ def create_graph_for_augmentation_type(folder_name: str):
     # plt.show()
 
 
-# create_graph_for_augmentation_type(f"None/{Datasets.TWEET.value}")
+create_graph_for_augmentation_type(f"None/{Datasets.TWEET.value}")
 create_graph_for_augmentation_type(f"None/{Datasets.IMDB.value}")
-# create_graph_for_augmentation_type(f"None/{Datasets.AG_NEWS.value}")
+create_graph_for_augmentation_type(f"None/{Datasets.AG_NEWS.value}")
 
-# create_graph_for_augmentation_type(f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.TWEET.value}")
+create_graph_for_augmentation_type(f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.TWEET.value}")
 create_graph_for_augmentation_type(
     f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.IMDB.value}"
 )
-# create_graph_for_augmentation_type(f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.AG_NEWS.value}")
+create_graph_for_augmentation_type(f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.AG_NEWS.value}")
 
 create_graph_for_augmentation_type(
     f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.TWEET.value}"
@@ -127,13 +127,13 @@ create_graph_for_augmentation_type(
 create_graph_for_augmentation_type(
     f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.IMDB.value}"
 )
-# create_graph_for_augmentation_type(f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.AG_NEWS.value}")
+create_graph_for_augmentation_type(f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.AG_NEWS.value}")
 
-# create_graph_for_augmentation_type(f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.TWEET.value}")
+create_graph_for_augmentation_type(f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.TWEET.value}")
 create_graph_for_augmentation_type(
     f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.IMDB.value}"
 )
-# create_graph_for_augmentation_type(f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.AG_NEWS.value}")
+create_graph_for_augmentation_type(f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.AG_NEWS.value}")
 
 create_graph_for_augmentation_type(
     f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.TWEET.value}"
@@ -141,4 +141,4 @@ create_graph_for_augmentation_type(
 create_graph_for_augmentation_type(
     f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.IMDB.value}"
 )
-# create_graph_for_augmentation_type(f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.AG_NEWS.value}")
+create_graph_for_augmentation_type(f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.AG_NEWS.value}")

@@ -17,6 +17,23 @@ class AugmentationType(enum.Enum):
     CONTEXTUAL_WORD_EMBS = "Name:ContextualWordEmbs_Aug,_Action:substitute,_Method:word"
     RANDOM_SWAP = "Name:RandomChar_Aug,_Action:swap,_Method:char"
 
+class FolderPaths(enum.Enum):
+    NO_AUG_TWEET = f"None/{Datasets.TWEET.value}"
+    NO_AUG_IMDB = f"None/{Datasets.IMDB.value}"
+    NO_AUG_AG_NEWS = f"None/{Datasets.AG_NEWS.value}"
+    BACKTRANSLATION_TWEET = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.TWEET.value}"
+    BACKTRANSLATION_IMDB = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.IMDB.value}"
+    BACKTRANSLATION_AG_NEWS = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.AG_NEWS.value}"
+    SYNONYM_TWEET = f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.TWEET.value}"
+    SYNONYM_IMDB = f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.IMDB.value}"
+    SYNONYM_AG_NEWS = f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.AG_NEWS.value}"
+    BERT_TWEET = f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.TWEET.value}"
+    BERT_IMDB = f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.IMDB.value}"
+    BERT_AG_NEWS = f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.AG_NEWS.value}"
+    RANDOM_SWAP_TWEET = f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.TWEET.value}"
+    RANDOM_SWAP_IMDB = f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.IMDB.value}"
+    RANDOM_SWAP_AG_NEWS = f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.AG_NEWS.value}"
+
 
 class QueryStrategy(enum.Enum):
     RANDOM_SAMPLING = "RandomSampling"
