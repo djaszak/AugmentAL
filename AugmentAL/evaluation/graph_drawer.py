@@ -1,14 +1,13 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-from evaluation.constants import (
+from constants import (
     AugmentationType,
     Datasets,
     STOPPING_CRITERIA,
     QUERY_STRATEGY_COLUMN,
     LATEX_IMAGES_PATH,
 )
-from evaluation.utils import create_complete_frame
-
+from utils import create_complete_frame
 
 
 def create_graph_for_augmentation_type(folder_name: str):

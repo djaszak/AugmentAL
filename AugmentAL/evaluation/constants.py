@@ -2,7 +2,7 @@ import enum
 
 
 class Datasets(enum.Enum):
-    ROTTEN = "rotten_tomatoes"
+    # ROTTEN = "rotten_tomatoes"
     IMDB = "imdb"
     AG_NEWS = "fancyzhx/ag_news"
     TWEET = "tweet_eval"
@@ -11,19 +11,18 @@ class Datasets(enum.Enum):
 class AugmentationType(enum.Enum):
     BACK_TRANSLATION_AUG = "Name:BackTranslationAug,_Action:substitute,_Method:word"
     SYNONYM_AUG = "Name:Synonym_Aug,_Aug_Src:wordnet,_Action:substitute,_Method:word"
-    CONTEXTUAL_WORD_EMBS_FOR_SENTENCE = (
-        "Name:ContextualWordEmbsForSentence_Aug,_Action:insert,_Method:sentence"
-    )
+    # CONTEXTUAL_WORD_EMBS_FOR_SENTENCE = (
+    #     "Name:ContextualWordEmbsForSentence_Aug,_Action:insert,_Method:sentence"
+    # )
     CONTEXTUAL_WORD_EMBS = "Name:ContextualWordEmbs_Aug,_Action:substitute,_Method:word"
     RANDOM_SWAP = "Name:RandomChar_Aug,_Action:swap,_Method:char"
 
-class FolderPaths(enum.Enum):
+class BasePaths(enum.Enum):
     NO_AUG_TWEET = f"None/{Datasets.TWEET.value}"
     NO_AUG_IMDB = f"None/{Datasets.IMDB.value}"
     NO_AUG_AG_NEWS = f"None/{Datasets.AG_NEWS.value}"
-    BACKTRANSLATION_TWEET = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.TWEET.value}"
-    BACKTRANSLATION_IMDB = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.IMDB.value}"
-    BACKTRANSLATION_AG_NEWS = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.AG_NEWS.value}"
+
+class AugmentedPaths(enum.Enum):
     SYNONYM_TWEET = f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.TWEET.value}"
     SYNONYM_IMDB = f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.IMDB.value}"
     SYNONYM_AG_NEWS = f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.AG_NEWS.value}"
@@ -33,13 +32,49 @@ class FolderPaths(enum.Enum):
     RANDOM_SWAP_TWEET = f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.TWEET.value}"
     RANDOM_SWAP_IMDB = f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.IMDB.value}"
     RANDOM_SWAP_AG_NEWS = f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.AG_NEWS.value}"
+    BACKTRANSLATION_TWEET = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.TWEET.value}"
+    BACKTRANSLATION_IMDB = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.IMDB.value}"
+    BACKTRANSLATION_AG_NEWS = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.AG_NEWS.value}"
 
 
-class QueryStrategy(enum.Enum):
+class AugmentedStrategies(enum.Enum):    
+    AUGMENTED_OUTCOME = "AugmentedOutcomesQueryStrategy"
+    AUGMENTED_SEARCH_SPACE = "AugmentedSearchSpaceExtensionQueryStrategy"
+    AVERAGE_ACROSS_AUGMENTED = "AverageAcrossAugmentedQueryStrategy"
+
+class BaselineStrategies(enum.Enum):
     RANDOM_SAMPLING = "RandomSampling"
     BREAKING_TIES = "BreakingTies"
 
+QUERY_STRATEGIES_VERBOSE = {
+    BaselineStrategies.RANDOM_SAMPLING: "Random Sampling",
+    BaselineStrategies.BREAKING_TIES: "Breaking Ties",
+    AugmentedStrategies.AUGMENTED_OUTCOME: "Extended Outcome",
+    AugmentedStrategies.AUGMENTED_SEARCH_SPACE: "Extended Search Space",
+    AugmentedStrategies.AVERAGE_ACROSS_AUGMENTED: "AAA",
+}
 
+AUGMENTATION_METHOD_VERBOSE = {
+    AugmentationType.BACK_TRANSLATION_AUG.value: "Backtranslation",
+    AugmentationType.SYNONYM_AUG.value: "Synonym",
+    AugmentationType.CONTEXTUAL_WORD_EMBS.value: "BERT",
+    AugmentationType.RANDOM_SWAP.value: "Random Swap",
+}
+
+DATASETS_VERBOSE = {
+    Datasets.IMDB: "IMDB",
+    Datasets.AG_NEWS: "AG News",
+    Datasets.TWEET: "Tweet",
+}
+
+DATASETS_VALUES_VERBOSE = {
+    Datasets.IMDB.value: "IMDB",
+    Datasets.AG_NEWS.value: "AG News",
+    Datasets.TWEET.value: "Tweet",
+}
+
+LATEX_TABLES_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables/"
+LATEX_TABLES_VARIANCE_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables_variance/" 
 LATEX_IMAGES_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/images/"
 
 QUERY_STRATEGY_COLUMN = "query_strategy"
@@ -55,4 +90,19 @@ STOPPING_CRITERIA = [
     "classification_change_middle_ground_history",
     "classification_change_aggressive_history",
 ]
+
+AUGMENTATION_METHODS_DICT = {
+    AugmentedPaths.BACKTRANSLATION_TWEET.value: "Backtranslation",
+    AugmentedPaths.SYNONYM_TWEET.value: "Synonym",
+    AugmentedPaths.BERT_TWEET.value: "BERT",
+    AugmentedPaths.RANDOM_SWAP_TWEET.value: "Random Swap",
+    AugmentedPaths.BACKTRANSLATION_IMDB.value: "Backtranslation",
+    AugmentedPaths.SYNONYM_IMDB.value: "Synonym",
+    AugmentedPaths.BERT_IMDB.value: "BERT",
+    AugmentedPaths.RANDOM_SWAP_IMDB.value: "Random Swap",
+    AugmentedPaths.BACKTRANSLATION_AG_NEWS.value: "Backtranslation",
+    AugmentedPaths.SYNONYM_AG_NEWS.value: "Synonym",
+    AugmentedPaths.BERT_AG_NEWS.value: "BERT",
+    AugmentedPaths.RANDOM_SWAP_AG_NEWS.value: "Random Swap",
+}
 

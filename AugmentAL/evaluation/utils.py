@@ -2,7 +2,7 @@ import os
 
 from pathlib import Path
 import pandas as pd
-from evaluation.constants import QUERY_STRATEGY_COLUMN
+from constants import QUERY_STRATEGY_COLUMN
 
 def get_json_files(folder_name: str):
     """
@@ -52,4 +52,12 @@ def create_complete_frame(folder_name: str) -> tuple[pd.DataFrame, int]:
             frames.extend(inter_list)
 
     return pd.concat(frames), len(frames)
+
+
+def get_query_strategy_frame(folder_name: str, query_strategy: str):
+    try:
+        frame, _ = create_complete_frame(folder_name)
+    except FileNotFoundError:
+        return pd.DataFrame()
+    return frame[frame[QUERY_STRATEGY_COLUMN] == query_strategy]
 
