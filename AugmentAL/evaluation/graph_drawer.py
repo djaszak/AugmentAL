@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import seaborn as sns
 from constants import (
     AugmentationType,
@@ -6,6 +7,9 @@ from constants import (
     STOPPING_CRITERIA,
     QUERY_STRATEGY_COLUMN,
     LATEX_IMAGES_PATH,
+    AugmentedPaths,
+    BasePaths
+
 )
 from utils import create_complete_frame
 
@@ -20,8 +24,13 @@ def create_graph_for_augmentation_type(folder_name: str):
         col=QUERY_STRATEGY_COLUMN,
         kind="line",
     )
+    g.set_axis_labels("Iterations", "Test Accuracy")
+    # g.xaxis.set_major_locator(ticker.MultipleLocator(5))
+    # g.xaxis.set_major_formatter(ticker.ScalarFormatter())
     g.figure.subplots_adjust(top=0.9)  # adjust the Figure in rp
     g.figure.suptitle(f"{folder_name}, Amount of runs: {n_frames}")
+    # g.refline(y=0.5, linestyle="--", color="r")
+    # g.refline(y=frame["test_accuracies"].max(), linestyle="--", color="r")
     # g.map_dataframe(annotate_with_stopping_line)
     for ax in g.axes.flat:
         # Get the augmentation method associated with this subplot
@@ -29,6 +38,11 @@ def create_graph_for_augmentation_type(folder_name: str):
 
         # Filter the data for the current augmentation method
         subset_data = frame[frame[QUERY_STRATEGY_COLUMN] == augmentation_method]
+
+        
+
+        # Add horizontal line at highest mean accuracy
+        highest_mean_accuracy = subset_data["test_accuracies"].max()
 
         for criterion in STOPPING_CRITERIA:
             if subset_data[criterion].any():
@@ -63,11 +77,11 @@ def create_graph_for_augmentation_type(folder_name: str):
                 label = (
                     # Conservative = solid, Middle Ground = dashed, Aggressive = dotted
                     # If the criterion is not in the name, the line is dashdot
-                    "Kappa Average"
+                    "KA"
                     if "kappa" in criterion
-                    else "Classification Change"
+                    else "CC"
                     if "classification" in criterion
-                    else "Delta F-Score"
+                    else "DF"
                     if "delta" in criterion
                     else "y"
                 )
@@ -84,6 +98,7 @@ def create_graph_for_augmentation_type(folder_name: str):
                         else ""
                     )
                 )
+                label += f" Iter: {average_true_iteration}, Acc: {round(subset_data.loc[subset_data['iterations'] == average_true_iteration, 'test_accuracies'].mean(), 2)}"
                 ax.axvline(
                     x=average_true_iteration,
                     color=color,
@@ -95,7 +110,7 @@ def create_graph_for_augmentation_type(folder_name: str):
                 ax.text(
                     average_true_iteration,
                     0.5,
-                    f"Iteration {average_true_iteration}",
+                    f"",
                     color=color,
                     ha="right",
                     va="center",
@@ -105,39 +120,50 @@ def create_graph_for_augmentation_type(folder_name: str):
 
                 ax.legend(loc=0)
 
+    # g.set(xticks=x_ticks)
     plt.tight_layout()
     plt.savefig(f"{LATEX_IMAGES_PATH}{folder_name}.png")
     # plt.show()
 
+for folder_path in AugmentedPaths:
+    try:
+        create_graph_for_augmentation_type(folder_path.value)
+    except FileNotFoundError:
+        continue
+for folder_path in BasePaths:
+    try:
+        create_graph_for_augmentation_type(folder_path.value)
+    except FileNotFoundError:
+        continue
 
-create_graph_for_augmentation_type(f"None/{Datasets.TWEET.value}")
-create_graph_for_augmentation_type(f"None/{Datasets.IMDB.value}")
-create_graph_for_augmentation_type(f"None/{Datasets.AG_NEWS.value}")
+# create_graph_for_augmentation_type(f"None/{Datasets.TWEET.value}")
+# create_graph_for_augmentation_type(f"None/{Datasets.IMDB.value}")
+# create_graph_for_augmentation_type(f"None/{Datasets.AG_NEWS.value}")
 
-create_graph_for_augmentation_type(f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.TWEET.value}")
-create_graph_for_augmentation_type(
-    f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.IMDB.value}"
-)
-create_graph_for_augmentation_type(f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.AG_NEWS.value}")
+# create_graph_for_augmentation_type(f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.TWEET.value}")
+# create_graph_for_augmentation_type(
+#     f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.IMDB.value}"
+# )
+# create_graph_for_augmentation_type(f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.AG_NEWS.value}")
 
-create_graph_for_augmentation_type(
-    f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.TWEET.value}"
-)
-create_graph_for_augmentation_type(
-    f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.IMDB.value}"
-)
-create_graph_for_augmentation_type(f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.AG_NEWS.value}")
+# create_graph_for_augmentation_type(
+#     f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.TWEET.value}"
+# )
+# create_graph_for_augmentation_type(
+#     f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.IMDB.value}"
+# )
+# create_graph_for_augmentation_type(f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.AG_NEWS.value}")
 
-create_graph_for_augmentation_type(f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.TWEET.value}")
-create_graph_for_augmentation_type(
-    f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.IMDB.value}"
-)
-create_graph_for_augmentation_type(f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.AG_NEWS.value}")
+# create_graph_for_augmentation_type(f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.TWEET.value}")
+# create_graph_for_augmentation_type(
+#     f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.IMDB.value}"
+# )
+# create_graph_for_augmentation_type(f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.AG_NEWS.value}")
 
-create_graph_for_augmentation_type(
-    f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.TWEET.value}"
-)
-create_graph_for_augmentation_type(
-    f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.IMDB.value}"
-)
-create_graph_for_augmentation_type(f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.AG_NEWS.value}")
+# create_graph_for_augmentation_type(
+#     f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.TWEET.value}"
+# )
+# create_graph_for_augmentation_type(
+#     f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.IMDB.value}"
+# )
+# create_graph_for_augmentation_type(f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.AG_NEWS.value}")

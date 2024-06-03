@@ -75,6 +75,7 @@ DATASETS_VALUES_VERBOSE = {
 
 LATEX_TABLES_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables/"
 LATEX_TABLES_VARIANCE_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables_variance/" 
+LATEX_TABLES_RAW_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables_raw/" 
 LATEX_IMAGES_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/images/"
 
 QUERY_STRATEGY_COLUMN = "query_strategy"
