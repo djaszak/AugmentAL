@@ -33,7 +33,7 @@ chosen_dataset = Datasets.IMDB.value
 
 
 def create_raw_set(
-    dataset_name: str, augmentation_method: AugmentationMethods | None = None, saving_path: str = "/beegfs/ws/0/s8822750-active-learning-data-augmentation/datasets"
+    dataset_name: str, augmentation_method: AugmentationMethods | None = None, saving_path: str = "/data/horse/ws/s8822750-active-learning-data-augmentation/datasets"
 ):
     """If augmentation_method is not None, create an augmented dataset
 
