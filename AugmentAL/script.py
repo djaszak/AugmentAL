@@ -28,7 +28,7 @@ num_queries = 50
 num_samples = 20
 num_augmentations = 5
 chosen_dataset = Datasets.IMDB.value
-# datasets_path = "/beegfs/ws/0/s8822750-active-learning-data-augmentation/datasets"
+# datasets_path = "/data/horse/ws/s8822750-active-learning-data-augmentation/datasets"
 # datasets_path = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/datasets"
 
 

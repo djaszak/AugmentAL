@@ -7,14 +7,14 @@
 #SBATCH --gres=gpu:1 # use 1 GPU per node (i.e. use one GPU per task)
 #SBATCH --time=150:00:00 # run for 1 hour
 #SBATCH --account=p_ml_il # account CPU time to project p_number_crunch
-#SBATCH --mem=990000
+#SBATCH --mem=123750
 #SBATCH --mail-user=dennis.jaszak@mailbox.tu-dresden.de
-#SBATCH --output=/beegfs/ws/0/s8822750-active-learning-data-augmentation/augmentation/synonym/logs/out-%A_%a.txt
-#SBATCH --error=/beegfs/ws/0/s8822750-active-learning-data-augmentation/augmentation/synonym/logs/error-%A_%a.txt
+#SBATCH --output=/data/horse/ws/s8822750-active-learning-data-augmentation/augmentation/synonym/logs/out-%A_%a.txt
+#SBATCH --error=/data/horse/ws/s8822750-active-learning-data-augmentation/augmentation/synonym/logs/error-%A_%a.txt
 
 module load release/23.04  GCCcore/12.2.0
 module load Python/3.10.8
 
-source /beegfs/ws/0/s8822750-active-learning-data-augmentation/active-learning-venv/bin/activate
+source /data/horse/ws/s8822750-active-learning-data-augmentation/active-learning-venv/bin/activate
 
 srun python /home/s8822750/AugmentAL/AugmentAL/aug_ag_news_synonym.py
