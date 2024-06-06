@@ -1,3 +1,4 @@
+print("LETS GET STARTED")
 import os
 import json
 import pandas as pd
@@ -52,6 +53,7 @@ def create_raw_set(
     if augmentation_method:
         # Try to load a local already augmented dataset if it exists.
         potential_training_set_path = f"{saving_path}/{dataset_name}/{augmentation_method}"
+        print(potential_training_set_path)
         if os.path.exists(potential_training_set_path) and os.listdir(potential_training_set_path):
             raw_train = load_from_disk(f"{potential_training_set_path}")
             raw_test = loaded_dataset["test"]
@@ -90,6 +92,7 @@ def run_script(
     raw_test, raw_train, augmented_indices = create_raw_set(
         dataset, augmentation_method
     )
+    print("DATASET was loaded")
     if not query_strategies:
         query_strategies = (
             [
@@ -112,10 +115,12 @@ def run_script(
     
 
     for query_strategy in query_strategies:
+        print(query_strategy)
         final_results = {}
 
         for rep in range(repetitions):
             saving_name = f"{query_strategy}_{num_queries}_queries_num_samples_{num_samples}_num_augmentations_{num_augmentations}.json"
+            print(saving_name)
             try:
                 with open((path / saving_name).resolve(), "r") as f:
                     try:
@@ -128,6 +133,7 @@ def run_script(
                         actual_repetition = rep
             except FileNotFoundError:
                 actual_repetition = rep
+            print("STARTING TO RUN ACTIVE LEARNING LOOP")
             results = run_active_learning_loop(
                 raw_test,
                 raw_train,

@@ -48,12 +48,17 @@ def run_active_learning_loop(
     # Middle ground, which will be a bit more aggressive
     # Aggressive, which will be the most aggressive one
 
+    import psutil
+    process = psutil.Process()
+    print(f"Memory before kappa: {process.memory_info().rss}") 
+    print("initializing stopping criteria")
     # Kappa Average
     kappa_average_conservative = KappaAverage(num_classes)
     kappa_average_middle_ground = KappaAverage(num_classes, kappa=0.9)
     kappa_average_aggressive = KappaAverage(num_classes, kappa=0.8)
-
+    print(f"Memory after kappa: {process.memory_info().rss}") 
     # Delta F-Score
+    # print(f"Memory before delta f: {process.memory_info().rss}") 
     if num_classes is 2:
         delta_f_score_conservative = DeltaFScore(num_classes)
         delta_f_score_middle_ground = DeltaFScore(num_classes, threshold=0.07)
@@ -62,49 +67,78 @@ def run_active_learning_loop(
         delta_f_score_conservative = None
         delta_f_score_middle_ground = None
         delta_f_score_aggressive = None
-
+    print(f"Memory after delta f: {process.memory_info().rss}") 
     # Classification Change
     classification_change_conservative = ClassificationChange(num_classes)
     classification_change_middle_ground = ClassificationChange(
         num_classes, threshold=0.04
     )
     classification_change_aggressive = ClassificationChange(num_classes, threshold=0.09)
+    print(f"Memory after classfication change: {process.memory_info().rss}") 
 
-    # Overall Uncertainty
-    overall_uncertainty_conservative = OverallUncertainty(num_classes)
-    overall_uncertainty_middle_ground = OverallUncertainty(num_classes, threshold=0.04)
-    overall_uncertainty_aggressive = OverallUncertainty(num_classes, threshold=0.09)
+    # # Overall Uncertainty
+    # overall_uncertainty_conservative = OverallUncertainty(num_classes)
+    # overall_uncertainty_middle_ground = OverallUncertainty(num_classes, threshold=0.04)
+    # overall_uncertainty_aggressive = OverallUncertainty(num_classes, threshold=0.09)
 
-    average_across_augmented_strategy = AverageAcrossAugmentedQueryStrategy(
-        base_strategy=base_strategy, augmented_indices=augmented_indices
-    )
-    # Here we could add more custom configurations for the query strategies
-    query_strategies: dict[str, QueryStrategy] = {
-        "RandomSampling": RandomSampling(),
-        "BreakingTies": base_strategy,
-        "AugmentedSearchSpaceExtensionQueryStrategy": AugmentedSearchSpaceExtensionQueryStrategy(
+    def create_query_strategy(strategy):
+        average_across_augmented_strategy = AverageAcrossAugmentedQueryStrategy(
             base_strategy=base_strategy, augmented_indices=augmented_indices
-        ),
-        "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy": AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
-            base_strategy=base_strategy, augmented_indices=augmented_indices
-        ),
-        "AugmentedOutcomesQueryStrategy": AugmentedOutcomesQueryStrategy(
-            base_strategy=base_strategy, augmented_indices=augmented_indices
-        ),
-        "AverageAcrossAugmentedQueryStrategy": average_across_augmented_strategy,
-        "AverageAcrossAugmentedExtendedOutcomesQueryStrategy": AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
-            base_strategy=average_across_augmented_strategy,
-            augmented_indices=augmented_indices,
-        ),
-    }
-
+        )
+        if strategy == "RandomSampling":
+            return RandomSampling()
+        if strategy == "BreakingTies":
+            return base_strategy
+        if strategy == "AugmentedSearchSpaceExtensionQueryStrategy":
+            return AugmentedSearchSpaceExtensionQueryStrategy(
+                base_strategy=base_strategy, augmented_indices=augmented_indices
+            )
+        if strategy == "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy":
+            return AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
+                base_strategy=base_strategy, augmented_indices=augmented_indices
+            )
+        if strategy == "AugmentedOutcomesQueryStrategy":
+            return AugmentedOutcomesQueryStrategy(
+                base_strategy=base_strategy, augmented_indices=augmented_indices
+            )
+        if strategy == "AverageAcrossAugmentedQueryStrategy":
+            return average_across_augmented_strategy
+        if strategy == "AverageAcrossAugmentedExtendedOutcomesQueryStrategy":
+            return AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
+                base_strategy=average_across_augmented_strategy,
+                augmented_indices=augmented_indices,
+            )
+        
+        # Here we could add more custom configurations for the query strategies
+        # query_strategies: dict[str, QueryStrategy] = {
+        #     "RandomSampling": RandomSampling(),
+        #     "BreakingTies": base_strategy,
+        #     "AugmentedSearchSpaceExtensionQueryStrategy": AugmentedSearchSpaceExtensionQueryStrategy(
+        #         base_strategy=base_strategy, augmented_indices=augmented_indices
+        #     ),
+        #     "AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy": AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
+        #         base_strategy=base_strategy, augmented_indices=augmented_indices
+        #     ),
+        #     "AugmentedOutcomesQueryStrategy": AugmentedOutcomesQueryStrategy(
+        #         base_strategy=base_strategy, augmented_indices=augmented_indices
+        #     ),
+        #     "AverageAcrossAugmentedQueryStrategy": average_across_augmented_strategy,
+        #     "AverageAcrossAugmentedExtendedOutcomesQueryStrategy": AugmentedSearchSpaceExtensionAndOutcomeQueryStrategy(
+        #         base_strategy=average_across_augmented_strategy,
+        #         augmented_indices=augmented_indices,
+        #     ),
+        # }
+    print(f"Memory before creating small text datasets: {process.memory_info().rss}") 
     test = create_small_text_dataset(raw_test)
     train = create_small_text_dataset(raw_train)
+    print(f"Memory before creatin g small text datasets: {process.memory_info().rss}")
     chosen_strategy = (
-        query_strategies[query_strategy]
+        # query_strategies[query_strategy]
+        create_query_strategy(query_strategy)
         if isinstance(query_strategy, str)
         else query_strategy
     )
+    print(f"Memory before creating active learner: {process.memory_info().rss}") 
     active_learner, indices_labeled = create_active_learner(
         train_set=train,
         num_classes=num_classes,
@@ -115,6 +149,7 @@ def run_active_learning_loop(
         model=model,
         device=device,
     )
+    print("active learner created")
     indices_train = [x for x in range(raw_train.num_rows)]
     test_results = []
     train_results = []
