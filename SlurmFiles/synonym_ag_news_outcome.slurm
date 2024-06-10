@@ -4,7 +4,7 @@
 #SBATCH --mincpus=1 # allocate one task per node...
 #SBATCH --ntasks=1 # ...which means 2 tasks in total (see note below)
 #SBATCH --cpus-per-task=12 # use 6 threads per task
-#SBATCH --gres=gpu:1 # use 1 GPU per node (i.e. use one GPU per task)
+#SBATCH --gres=gpu:8 # use 1 GPU per node (i.e. use one GPU per task)
 #sbatch --time=160:00:00 # run for 1 hour
 #SBATCH --account=p_ml_il # account CPU time to project p_number_crunch
 #SBATCH --mem=123750
@@ -16,5 +16,9 @@ module load release/23.04  GCCcore/12.2.0
 module load Python/3.10.8
 
 source /data/horse/ws/s8822750-active-learning-data-augmentation/active-learning-venv/bin/activate
+
+export HF_MODULE_CACHE="/data/horse/ws/s8822750-active-learning-data-augmentation/hf-cache"
+export TRANSFORMERS_CACHE="/data/horse/ws/s8822750-active-learning-data-augmentation/hf-cache"
+export HF_DATASETS_CACHE="/data/horse/ws/s8822750-active-learning-data-augmentation/hf-cache"
 
 srun python /home/s8822750/AugmentAL/AugmentAL/synonym_replacement_ag_news_outcome.py

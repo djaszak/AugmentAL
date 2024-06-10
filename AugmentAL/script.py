@@ -59,6 +59,7 @@ def create_raw_set(
             raw_test = loaded_dataset["test"]
             print(raw_train, "In loading mode")
             print(raw_test)
+            print(f"{potential_training_set_path}/augmented_indices.json")
             with open(f"{potential_training_set_path}/augmented_indices.json", "r") as f:
                 augmented_indices = {int(k): v for k,v in json.load(f).items()}
         else:
