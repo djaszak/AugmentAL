@@ -56,10 +56,11 @@ def create_graph_for_augmentation_type(folder_name: str):
     )
     frame.rename(
         columns={
-            "dataset": "DS",
-            "augmentation_method": "AM",
-            "query_strategy": "QS",
+            "dataset": "Dataset",
+            "augmentation_method": "Augmentation Method",
+            "query_strategy": "Query Strategy",
         },
+        inplace=True,
     )
     # frame.replace(
     #     {
@@ -68,25 +69,25 @@ def create_graph_for_augmentation_type(folder_name: str):
     #     "Backtranslation",
     #     inplace=True,
     # )
-    print(frame)
-    # g = sns.relplot(
-    #     data=frame,
-    #     x="iterations",
-    #     y="test_accuracies",
-    #     col="AM",
-    #     kind="line",
-    #     hue="QS",
-    #     row="DS",
-    #     facet_kws={
-    #         "margin_titles": True,
-    #         # "despine": False,
-    #     }
-    # )
-    # g.figure.subplots_adjust(wspace=0, hspace=0)
-    # g.set_axis_labels("Iterations", "Test Accuracy")
-    # g.figure.subplots_adjust(top=0.9)  # adjust the Figure in rp
-    # plt.tight_layout()
-    # # plt.savefig(f"{LATEX_IMAGES_PATH}{folder_name}.png")
+    # plt.figure(figsize=(6.4, 20))
+    g = sns.relplot(
+        data=frame,
+        x="iterations",
+        y="test_accuracies",
+        col="Augmentation Method",
+        kind="line",
+        hue="Query Strategy",
+        row="Dataset",
+        facet_kws={
+            "margin_titles": True,
+            # "despine": False,
+        }
+    )
+    g.figure.subplots_adjust(wspace=0, hspace=0)
+    g.set_axis_labels("Iterations", "Test Accuracy")
+    g.figure.subplots_adjust(top=0.9)  # adjust the Figure in rp
+    plt.tight_layout()
+    plt.savefig(f"{LATEX_IMAGES_PATH}/full_comparison.png")
     # plt.show()
 
 create_graph_for_augmentation_type("None/TWEET")
