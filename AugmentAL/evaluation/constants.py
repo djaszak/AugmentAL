@@ -79,6 +79,8 @@ LATEX_TABLES_RAW_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudD
 LATEX_IMAGES_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/images/"
 
 QUERY_STRATEGY_COLUMN = "query_strategy"
+DATASET_COLUMN = "dataset"
+AUGMENTATION_METHOD_COLUMN = "augmentation_method"
 
 STOPPING_CRITERIA = [
     "kappa_average_conservative_history",
