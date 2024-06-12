@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1 # ...which means 2 tasks in total (see note below)
 #SBATCH --cpus-per-task=12 # use 6 threads per task
 #SBATCH --gres=gpu:8 # use 1 GPU per node (i.e. use one GPU per task)
-#sbatch --time=160:00:00 # run for 1 hour
+#SBATCH --time=150:00:00 # run for 1 hour
 #SBATCH --account=p_ml_il # account CPU time to project p_number_crunch
 #SBATCH --mem=123750
 #SBATCH --mail-user=dennis.jaszak@mailbox.tu-dresden.de
