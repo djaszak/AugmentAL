@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import pandas as pd
-from constants import AUGMENTATION_METHOD_COLUMN, DATASET_COLUMN, QUERY_STRATEGY_COLUMN, AugmentedPaths, BasePaths
+from constants import AUGMENTATION_METHOD_COLUMN, DATASET_COLUMN, QUERY_STRATEGY_COLUMN, AugmentedPaths, BasePaths, AugmentationType
 
 
 def get_json_files(folder_name: str):
@@ -41,17 +41,13 @@ def pad_dict_list(dict_list, padel):
 def extend_frames(frames, file, folder_name):
     with open(file, "r") as f:
         inter_list = []
-        for _, series in pd.read_json(f).items():
+        for (idx, (_, series)) in enumerate(pd.read_json(f).items()):
             # Because of a small oversight, the stopping criteria do have one value less
             # than the other columns. This is why we need to orient it, and transpose it.
             padded_series = pad_dict_list(series[0], False)
             frame = pd.DataFrame(padded_series)
             frame[QUERY_STRATEGY_COLUMN] = os.path.basename(file).split("_")[0]
-            frame[AUGMENTATION_METHOD_COLUMN] = (
-                folder_name.split("/")[0]
-                if folder_name.split("/")[0] != "None"
-                else None
-            )
+            frame[AUGMENTATION_METHOD_COLUMN] = folder_name.split("/")[0]
             frame[DATASET_COLUMN] = folder_name.split("/")[1]
             inter_list.append(frame)
         frames.extend(inter_list)
@@ -63,7 +59,7 @@ def create_complete_frame(folder_name: str) -> tuple[pd.DataFrame, int]:
     for file in get_json_files(f"None/{folder_name.split('/')[1]}"):
         frames = extend_frames(frames, file, folder_name)
     for file in get_json_files(folder_name):
-        extend_frames(frames, file, folder_name)
+        frames = extend_frames(frames, file, folder_name)
 
     return pd.concat(frames), len(frames)
 

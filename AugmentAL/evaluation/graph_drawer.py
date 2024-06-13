@@ -1,59 +1,36 @@
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 import seaborn as sns
 from constants import (
     AugmentationType,
-    Datasets,
-    STOPPING_CRITERIA,
-    QUERY_STRATEGY_COLUMN,
-    DATASET_COLUMN,
-    AUGMENTATION_METHOD_COLUMN,
     LATEX_IMAGES_PATH,
-    AugmentedPaths,
-    BasePaths
-
+    BaselineStrategies,
+    AugmentedStrategies,
 )
-from utils import create_complete_frame, create_complete_frame_for_all_folders
+from utils import create_complete_frame_for_all_folders
 
-
-def create_graph_for_augmentation_type(folder_name: str):
+def create_graph_for_augmentation_type():
     frame, n_frames = create_complete_frame_for_all_folders()
 
+    # Replacing values in the DataFrame for readability
     frame.replace(
-        AugmentationType.BACK_TRANSLATION_AUG.value,
-        "Backtranslation",
+        {
+            AugmentationType.BACK_TRANSLATION_AUG.value: "Backtranslation",
+            AugmentationType.SYNONYM_AUG.value: "Synonym",
+            AugmentationType.RANDOM_SWAP.value: "Random Swap",
+            AugmentationType.CONTEXTUAL_WORD_EMBS.value: "BERT",
+            "tweet_eval": "Tweet Eval Hate",
+            "imdb": "IMDB",
+            "ag_news": "AG News",
+            BaselineStrategies.RANDOM_SAMPLING.value: "Random Sampling",
+            BaselineStrategies.BREAKING_TIES.value: "Breaking Ties",
+            AugmentedStrategies.AUGMENTED_OUTCOME.value: "Extended Outcome",
+            AugmentedStrategies.AUGMENTED_SEARCH_SPACE.value: "Extended Search Space",
+            AugmentedStrategies.AVERAGE_ACROSS_AUGMENTED.value: "AAA",
+        },
         inplace=True,
     )
-    frame.replace(
-        AugmentationType.SYNONYM_AUG.value,
-        "Synonym",
-        inplace=True,
-    )
-    frame.replace(
-        AugmentationType.RANDOM_SWAP.value,
-        "Random Swap",
-        inplace=True,
-    )
-    frame.replace(
-        AugmentationType.CONTEXTUAL_WORD_EMBS.value,
-        "BERT",
-        inplace=True,
-    )
-    frame.replace(
-        "tweet_eval",
-        "Tweet Eval Hate",
-        inplace=True,
-    )
-    frame.replace(
-        "imdb",
-        "IMDB",
-        inplace=True,
-    )
-    frame.replace(
-        "ag_news",
-        "AG News",
-        inplace=True,
-    )
+
+    # Renaming columns for readability
     frame.rename(
         columns={
             "dataset": "Dataset",
@@ -62,16 +39,14 @@ def create_graph_for_augmentation_type(folder_name: str):
         },
         inplace=True,
     )
-    # frame.replace(
-    #     {
-    #         AUGMENTATION_METHOD_COLUMN: AugmentationType.BACK_TRANSLATION_AUG.value,
-    #     },
-    #     "Backtranslation",
-    #     inplace=True,
-    # )
-    # plt.figure(figsize=(6.4, 20))
+
+    # Separate the baseline data
+    baseline_data = frame[frame["Augmentation Method"] == "None"]
+    plot_data = frame[frame["Augmentation Method"] != "None"]
+
+    # Create the relplot for the main data
     g = sns.relplot(
-        data=frame,
+        data=plot_data,
         x="iterations",
         y="test_accuracies",
         col="Augmentation Method",
@@ -80,25 +55,45 @@ def create_graph_for_augmentation_type(folder_name: str):
         row="Dataset",
         facet_kws={
             "margin_titles": True,
-            # "despine": False,
-        }
+        },
+        # legend=False,
     )
-    g.figure.subplots_adjust(wspace=0, hspace=0)
+
+    # Adjusting subplot parameters to reduce overlap
+    g.figure.subplots_adjust(wspace=0.1, hspace=0.2)
     g.set_axis_labels("Iterations", "Test Accuracy")
-    g.figure.subplots_adjust(top=0.9)  # adjust the Figure in rp
+    g.set_titles(col_template="{col_name}", row_template="{row_name}")
+
+    # Overlay baseline data on each subplot
+    baseline_colors = ['gray', 'blue']  # Define different colors for baselines
+    for (row_val, _), ax in g.axes_dict.items():
+        # Filtering the baseline data for the current subplot's dataset
+        subset = baseline_data[baseline_data["Dataset"] == row_val]
+
+        if not subset.empty:
+            # Plotting the baseline data for each Query Strategy in the baseline data
+            for i, query_strategy in enumerate(subset["Query Strategy"].unique()):
+                baseline_subset = subset[subset["Query Strategy"] == query_strategy]
+                sns.lineplot(
+                    data=baseline_subset,
+                    x="iterations",
+                    y="test_accuracies",
+                    ax=ax,
+                    label=f"Baseline ({query_strategy})",
+                    color=baseline_colors[i % len(baseline_colors)],
+                    linestyle='--',
+                    # legend=False
+                )
+
+    # Adjusting the legend
+    if g.axes.shape[0] > 1 and g.axes.shape[1] > 1:
+        handles, labels = g.axes[0, 0].get_legend_handles_labels()
+        g.legend.remove()
+    # g.add_legend(title='Query Strategy', labels=labels, handles=handles, loc='upper left')
+    
+    # Saving the plot
     plt.tight_layout()
     plt.savefig(f"{LATEX_IMAGES_PATH}/full_comparison.png")
-    # plt.show()
+    plt.show()
 
-create_graph_for_augmentation_type("None/TWEET")
-
-# for folder_path in AugmentedPaths:
-#     try:
-#         create_graph_for_augmentation_type(folder_path.value)
-#     except FileNotFoundError:
-#         continue
-# for folder_path in BasePaths:
-#     try:
-#         create_graph_for_augmentation_type(folder_path.value)
-#     except FileNotFoundError:
-#         continue
+create_graph_for_augmentation_type()

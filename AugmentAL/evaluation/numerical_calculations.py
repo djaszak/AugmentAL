@@ -40,7 +40,7 @@ def create_latex_tables_for_augmented_strategies():
         "Dataset": [],
         "Query Strategy": [],
         "Augmentation Method": [],
-        "n": [],
+        "i": [],
         "Acc": [],
         "$\Delta$ Rnd": [],
         "$\Delta$ Brk": [],
@@ -58,25 +58,25 @@ def create_latex_tables_for_augmented_strategies():
         # Because the latter part of the path represents the dataset.
         baseline_folder = f"None/{folder_path.value.split('/')[-1]}"
         for strategy in AugmentedStrategies:
-            for n in [5, 10, 20, 30, 40, 50, -5, -10]:
+            for i in [5, 10, 20, 30, 40, 50, -5, -10]:
                 # We then calculate the average accuracy for each of the query strategies.
                 random_baseline = calculate_average_over_iterations(
-                    baseline_folder, n, BaselineStrategies.RANDOM_SAMPLING.value
+                    baseline_folder, i, BaselineStrategies.RANDOM_SAMPLING.value
                 )
                 breaking_ties_baseline = calculate_average_over_iterations(
-                    baseline_folder, n, BaselineStrategies.BREAKING_TIES.value
+                    baseline_folder, i, BaselineStrategies.BREAKING_TIES.value
                 )
                 relevant_average_accuracy = calculate_average_over_iterations(
-                    folder_path.value, n, strategy.value
+                    folder_path.value, i, strategy.value
                 )
 
                 results_dict["Dataset"].append(
                     dataset_mapping[folder_path.value.split("/")[-1]]
                 )
                 results_dict["Query Strategy"].append(
-                    QUERY_STRATEGIES_VERBOSE[strategy]
+                    QUERY_STRATEGIES_VERBOSE[strategy.value]
                 )
-                results_dict["n"].append(n)
+                results_dict["i"].append(i)
                 results_dict["Acc"].append(relevant_average_accuracy)
                 results_dict["Augmentation Method"].append(
                     AUGMENTATION_METHOD_VERBOSE[folder_path.value.split("/")[0]]
@@ -91,7 +91,7 @@ def create_latex_tables_for_augmented_strategies():
     # results_dict represents all of the data that we could need for the table.
     # Now we need to split it correctly and save it to the correct files.
     frame = pd.DataFrame(results_dict).sort_values(
-        by=["Query Strategy", "n", "Dataset"]
+        by=["Query Strategy", "i", "Dataset"]
     )
     augmentation_method_separated_frames = [
         y for _, y in frame.groupby("Augmentation Method")
@@ -115,7 +115,7 @@ def create_latex_tables_for_augmented_strategies():
                 dataset_name = dataset_frame.at[dataset_frame.index[0], "Dataset"]
                 dataset_frame.drop(columns=["Dataset"], inplace=True)
                 if j > 0:
-                    dataset_frame.drop(columns=["n"], inplace=True)
+                    dataset_frame.drop(columns=["i"], inplace=True)
                 dataset_frame.to_latex(
                     f"{LATEX_TABLES_PATH}/{current_augmentation_method}_{current_query_strategy}_{dataset_name}.tex",
                     index=False,
@@ -126,7 +126,7 @@ def create_latex_tables_for_baseline_strategies():
     results_dict = {
         "Dataset": [],
         "Query Strategy": [],
-        "n": [],
+        "i": [],
         "Acc": [],
     }
     dataset_mapping = {
@@ -141,10 +141,10 @@ def create_latex_tables_for_baseline_strategies():
         # The baseline folder is the same as the folder, but with "None" instead of the augmentation method.
         # Because the latter part of the path represents the dataset.
         for strategy in BaselineStrategies:
-            for n in [5, 10, 20, 30, 40, 50, -5, -10]:
+            for i in [5, 10, 20, 30, 40, 50, -5, -10]:
                 # We then calculate the average accuracy for each of the query strategies.
                 relevant_average_accuracy = calculate_average_over_iterations(
-                    folder_path.value, n, strategy.value
+                    folder_path.value, i, strategy.value
                 )
 
                 results_dict["Dataset"].append(
@@ -153,13 +153,13 @@ def create_latex_tables_for_baseline_strategies():
                 results_dict["Query Strategy"].append(
                     QUERY_STRATEGIES_VERBOSE[strategy]
                 )
-                results_dict["n"].append(n)
+                results_dict["i"].append(i)
                 results_dict["Acc"].append(relevant_average_accuracy)
 
     # results_dict represents all of the data that we could need for the table.
     # Now we need to split it correctly and save it to the correct files.
     frame = pd.DataFrame(results_dict).sort_values(
-        by=["Query Strategy", "n", "Dataset"]
+        by=["Query Strategy", "i", "Dataset"]
     )
     query_strategy_separated_frames = [
         y for _, y in frame.groupby("Query Strategy")
@@ -175,7 +175,7 @@ def create_latex_tables_for_baseline_strategies():
         for j, dataset_frame in enumerate(dataset_separated_frames):
             dataset_name = dataset_frame.at[dataset_frame.index[0], "Dataset"]
             if j > 0:
-                dataset_frame.drop(columns=["n"], inplace=True)
+                dataset_frame.drop(columns=["i"], inplace=True)
             dataset_frame.to_latex(
                     f"{LATEX_TABLES_PATH}/base_{current_query_strategy}_{dataset_name}.tex",
                     index=False,
@@ -183,4 +183,4 @@ def create_latex_tables_for_baseline_strategies():
                 )
 
 create_latex_tables_for_augmented_strategies()
-create_latex_tables_for_baseline_strategies()
+# create_latex_tables_for_baseline_strategies()

@@ -47,11 +47,11 @@ class BaselineStrategies(enum.Enum):
     BREAKING_TIES = "BreakingTies"
 
 QUERY_STRATEGIES_VERBOSE = {
-    BaselineStrategies.RANDOM_SAMPLING: "Random Sampling",
-    BaselineStrategies.BREAKING_TIES: "Breaking Ties",
-    AugmentedStrategies.AUGMENTED_OUTCOME: "Extended Outcome",
-    AugmentedStrategies.AUGMENTED_SEARCH_SPACE: "Extended Search Space",
-    AugmentedStrategies.AVERAGE_ACROSS_AUGMENTED: "AAA",
+    BaselineStrategies.RANDOM_SAMPLING.value: "Random Sampling",
+    BaselineStrategies.BREAKING_TIES.value: "Breaking Ties",
+    AugmentedStrategies.AUGMENTED_OUTCOME.value: "Extended Outcome",
+    AugmentedStrategies.AUGMENTED_SEARCH_SPACE.value: "Extended Search Space",
+    AugmentedStrategies.AVERAGE_ACROSS_AUGMENTED.value: "AAA",
 }
 
 AUGMENTATION_METHOD_VERBOSE = {
@@ -62,15 +62,27 @@ AUGMENTATION_METHOD_VERBOSE = {
 }
 
 DATASETS_VERBOSE = {
-    Datasets.IMDB: "IMDB",
-    Datasets.AG_NEWS: "AG News",
-    Datasets.TWEET: "Tweet",
+    Datasets.IMDB.value: "IMDB",
+    Datasets.AG_NEWS.value: "AG News",
+    Datasets.TWEET.value: "Tweet",
 }
 
 DATASETS_VALUES_VERBOSE = {
     Datasets.IMDB.value: "IMDB",
     Datasets.AG_NEWS.value: "AG News",
     Datasets.TWEET.value: "Tweet",
+}
+
+STOPPING_CRITERIA_VERBOSE = {
+    "kappa_average_conservative_history": "Kappa Conservative",
+    "kappa_average_middle_ground_history": "Kappa Middle Ground",
+    "kappa_average_aggressive_history": "Kappa Aggressive",
+    "delta_f_score_conservative_history": "Delta F-Score Conservative",
+    "delta_f_score_middle_ground_history": "Delta F-Score Middle Ground",
+    "delta_f_score_aggressive_history": "Delta F-Score Aggressive",
+    "classification_change_conservative_history": "Classification Change Conservative",
+    "classification_change_middle_ground_history": "Classification Change Middle Ground",
+    "classification_change_aggressive_history": "Classification Change Aggressive",
 }
 
 LATEX_TABLES_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables/"
