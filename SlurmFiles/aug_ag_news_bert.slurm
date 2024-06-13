@@ -3,7 +3,7 @@
 #SBATCH --partition=alpha
 #SBATCH --mincpus=1 # allocate one task per node...
 #SBATCH --ntasks=1 # ...which means 2 tasks in total (see note below)
-#SBATCH --cpus-per-task=12 # use 6 threads per task
+#SBATCH --cpus-per-task=32 # use 6 threads per task
 #SBATCH --gres=gpu:8 # use 1 GPU per node (i.e. use one GPU per task)
 #SBATCH --time=168:00:00 # run for 1 hour
 #SBATCH --account=p_ml_il # account CPU time to project p_number_crunch
