@@ -10,7 +10,7 @@ from constants import (
     AugmentedStrategies,
     BaselineStrategies,
     BasePaths,
-    AugmentationType
+    AugmentationType,
 )
 from utils import get_query_strategy_frame, create_complete_frame_for_all_folders
 
@@ -203,7 +203,12 @@ def get_data_frame():
                 )
     for folder_path in BasePaths:
         for strategy in BaselineStrategies:
-            for augmentation_method in ["BERT", "Random Swap", "Synonym", "Backtranslation"]:
+            for augmentation_method in [
+                "BERT",
+                "Random Swap",
+                "Synonym",
+                "Backtranslation",
+            ]:
                 for i in [5, 10, 20, 30, 40, 50, -5, -10]:
                     relevant_average_accuracy = calculate_average_over_iterations(
                         folder_path.value, i, strategy.value
@@ -217,9 +222,7 @@ def get_data_frame():
                     )
                     results_dict["i"].append(i)
                     results_dict["Acc"].append(relevant_average_accuracy)
-                    results_dict["DA"].append(
-                        augmentation_method
-                    )
+                    results_dict["DA"].append(augmentation_method)
 
     # results_dict represents all of the data that we could need for the table.
     # Now we need to split it correctly and save it to the correct files.
@@ -249,7 +252,7 @@ def draw_bar_chart():
         row="Dataset",
         height=4,
         aspect=0.5,
-        hue = "Query Strategy",
+        hue="Query Strategy",
         # facet_kws={
         #     "margin_titles": True,
         # },
@@ -290,6 +293,3 @@ draw_bar_chart()
 #                     index=False,
 #                     float_format="{:.2f}".format,
 #                 )
-
-
-

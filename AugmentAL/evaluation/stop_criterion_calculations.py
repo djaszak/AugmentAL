@@ -12,6 +12,7 @@ from constants import (
 )
 from utils import get_query_strategy_frame
 
+
 def calculate_iter_and_acc(folder_name, query_strategy, criterion):
     query_strategy_filtered_frame = get_query_strategy_frame(
         folder_name, query_strategy
@@ -20,18 +21,21 @@ def calculate_iter_and_acc(folder_name, query_strategy, criterion):
         if query_strategy_filtered_frame[criterion].any():
             # Calculate the average iteration
             average_true_iteration = int(
-                query_strategy_filtered_frame.loc[query_strategy_filtered_frame[criterion] == True, "iterations"].mean()
+                query_strategy_filtered_frame.loc[
+                    query_strategy_filtered_frame[criterion] == True, "iterations"
+                ].mean()
             )
-            
+
             # Calculate the average accuracy
             average_accuracy = query_strategy_filtered_frame.loc[
                 query_strategy_filtered_frame[criterion] == True, "test_accuracies"
             ].mean()
-            
+
             # print(average_true_iteration, average_accuracy)
             return average_true_iteration, average_accuracy
         return 0, 0
     return 0, 0
+
 
 def create_latex_tables_for_augmented_strategies():
     results_dict = {
@@ -67,13 +71,27 @@ def create_latex_tables_for_augmented_strategies():
                     baseline_folder, BaselineStrategies.BREAKING_TIES.value, criterion
                 )
                 # Update the results dictionary
-                results_dict["Query Strategy"].append(QUERY_STRATEGIES_VERBOSE[strategy.value])
-                results_dict["Stopping Criterion"].append(STOPPING_CRITERIA_VERBOSE_SHORT[criterion])
-                results_dict["DA"].append(AUGMENTATION_METHOD_VERBOSE[folder_path.value.split("/")[0]])
-                results_dict["Iter/Acc"].append(f"{average_true_iteration}/{average_accuracy}")
-                results_dict["Iter/Acc Brk"].append(f"{breaking_true_iteration}/{breaking_accuracy}")
-                results_dict["Iter/Acc Rnd"].append(f"{random_true_iteration}/{random_accuracy}")
-                results_dict["Dataset"].append(dataset_mapping[folder_path.value.split("/")[-1]])
+                results_dict["Query Strategy"].append(
+                    QUERY_STRATEGIES_VERBOSE[strategy.value]
+                )
+                results_dict["Stopping Criterion"].append(
+                    STOPPING_CRITERIA_VERBOSE_SHORT[criterion]
+                )
+                results_dict["DA"].append(
+                    AUGMENTATION_METHOD_VERBOSE[folder_path.value.split("/")[0]]
+                )
+                results_dict["Iter/Acc"].append(
+                    f"{average_true_iteration}/{average_accuracy}"
+                )
+                results_dict["Iter/Acc Brk"].append(
+                    f"{breaking_true_iteration}/{breaking_accuracy}"
+                )
+                results_dict["Iter/Acc Rnd"].append(
+                    f"{random_true_iteration}/{random_accuracy}"
+                )
+                results_dict["Dataset"].append(
+                    dataset_mapping[folder_path.value.split("/")[-1]]
+                )
                 # We then calculate the average accuracy for each of the query strategies.
 
     # Now we need to split it correctly and save it to the correct files.
@@ -91,27 +109,17 @@ def create_latex_tables_for_augmented_strategies():
     # augmentation_method_separated_frames = [
     #     y for _, y in frame.groupby("DA")
     # ]
-    query_strategy_separated_frames = [
-        y for _, y in frame.groupby("Query Strategy")
-    ]
+    query_strategy_separated_frames = [y for _, y in frame.groupby("Query Strategy")]
     for query_frame in query_strategy_separated_frames:
-        current_augmentation_method = query_frame.at[
-            query_frame.index[0], "DA"
-        ]
-        current_query_strategy = query_frame.at[
-            query_frame.index[0], "Query Strategy"
-        ]
-        query_frame.drop(
-            columns=["Query Strategy"], inplace=True
-        )
+        current_augmentation_method = query_frame.at[query_frame.index[0], "DA"]
+        current_query_strategy = query_frame.at[query_frame.index[0], "Query Strategy"]
+        query_frame.drop(columns=["Query Strategy"], inplace=True)
         dataset_seperated_frames = [y for _, y in query_frame.groupby("Dataset")]
         for j, dataset_frame in enumerate(dataset_seperated_frames):
             dataset_name = dataset_frame.at[dataset_frame.index[0], "Dataset"]
             dataset_frame.drop(columns=["Dataset"], inplace=True)
             if j > 0:
-                dataset_frame.drop(
-                    columns=["DA"], inplace=True
-                )
+                dataset_frame.drop(columns=["DA"], inplace=True)
             dataset_frame.to_latex(
                 f"{LATEX_TABLES_STOP_PATH}/{current_query_strategy}_{dataset_name}.tex",
                 index=False,
@@ -120,7 +128,8 @@ def create_latex_tables_for_augmented_strategies():
 
     return results_dict
 
-results = create_latex_tables_for_augmented_strategies() 
+
+results = create_latex_tables_for_augmented_strategies()
 
 # for key, Value in results.items():
 #     print(f"{key} : {Value}")
@@ -156,12 +165,12 @@ print(pd.DataFrame(results))
 #                     average_true_iteration = int(
 #                         subset_data.loc[subset_data[criterion] == True, ITERATION_COLUMN].mean()
 #                     )
-                    
+
 #                     # Calculate the average accuracy
 #                     average_accuracy = subset_data.loc[
 #                         subset_data[criterion] == True, ACCURACY_COLUMN
 #                     ].mean()
-                    
+
 #                     # Update the results dictionary
 #                     results_dict["Stopping Criterion"].append(STOPPING_CRITERIA_VERBOSE_SHORT[criterion])
 #                     results_dict["Augmentation Method"].append(AUGMENTATION_METHOD_VERBOSE[augmentation_method])

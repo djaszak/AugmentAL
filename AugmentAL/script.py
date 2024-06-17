@@ -18,7 +18,7 @@ import multiprocessing as mp
 
 
 # try:
-#     print("SETTING START METHOD") 
+#     print("SETTING START METHOD")
 #     set_start_method('spawn', force=True)
 #     print("START METHOD SET")
 # except RuntimeError as e:
@@ -34,7 +34,9 @@ chosen_dataset = Datasets.IMDB.value
 
 
 def create_raw_set(
-    dataset_name: str, augmentation_method: AugmentationMethods | None = None, saving_path: str = "/data/horse/ws/s8822750-active-learning-data-augmentation/datasets"
+    dataset_name: str,
+    augmentation_method: AugmentationMethods | None = None,
+    saving_path: str = "/data/horse/ws/s8822750-active-learning-data-augmentation/datasets",
 ):
     """If augmentation_method is not None, create an augmented dataset
 
@@ -52,36 +54,51 @@ def create_raw_set(
     augmented_indices = {}
     if augmentation_method:
         # Try to load a local already augmented dataset if it exists.
-        potential_training_set_path = f"{saving_path}/{dataset_name}/{augmentation_method}"
+        potential_training_set_path = (
+            f"{saving_path}/{dataset_name}/{augmentation_method}"
+        )
         print(potential_training_set_path)
-        if os.path.exists(potential_training_set_path) and os.listdir(potential_training_set_path):
+        if os.path.exists(potential_training_set_path) and os.listdir(
+            potential_training_set_path
+        ):
             raw_train = load_from_disk(f"{potential_training_set_path}")
             raw_test = loaded_dataset["test"]
             print(raw_train, "In loading mode")
             print(raw_test)
             print(f"{potential_training_set_path}/augmented_indices.json")
-            with open(f"{potential_training_set_path}/augmented_indices.json", "r") as f:
-                augmented_indices = {int(k): v for k,v in json.load(f).items()}
+            with open(
+                f"{potential_training_set_path}/augmented_indices.json", "r"
+            ) as f:
+                augmented_indices = {int(k): v for k, v in json.load(f).items()}
         else:
             raw_train, augmented_indices = create_augmented_dataset(
-                loaded_dataset["train"], augmentation_method, n=num_augmentations, saving_path=potential_training_set_path 
+                loaded_dataset["train"],
+                augmentation_method,
+                n=num_augmentations,
+                saving_path=potential_training_set_path,
             )
             raw_test = loaded_dataset["test"]
 
     else:
         raw_test = loaded_dataset["test"]
         raw_train = loaded_dataset["train"]
-    
+
     return raw_test, raw_train, augmented_indices
 
 
 def run_script(
-    augmentation_method: AugmentationMethods | None = None, repetitions: int = 5, query_strategies: list = [], dataset: str = Datasets.IMDB.value
+    augmentation_method: AugmentationMethods | None = None,
+    repetitions: int = 5,
+    query_strategies: list = [],
+    dataset: str = Datasets.IMDB.value,
 ):
     start_time = datetime.now()
     print(f"Starting run at {start_time}. \n")
     path = (
-        Path(__file__).parent / "results" / str(augmentation_method).replace(" ", "_") / dataset
+        Path(__file__).parent
+        / "results"
+        / str(augmentation_method).replace(" ", "_")
+        / dataset
     ).resolve()
 
     try:
@@ -111,9 +128,7 @@ def run_script(
                 "RandomSampling",
                 "BreakingTies",
             ]
-    )
-
-    
+        )
 
     for query_strategy in query_strategies:
         print(query_strategy)
@@ -150,8 +165,7 @@ def run_script(
                 device="cuda",
             )
 
-            final_results[actual_repetition] = {"0": results[0],
-                                                "1": results[1] }
+            final_results[actual_repetition] = {"0": results[0], "1": results[1]}
 
             with open((path / saving_name).resolve(), "w") as f:
                 f.write(pd.DataFrame(final_results).to_json())

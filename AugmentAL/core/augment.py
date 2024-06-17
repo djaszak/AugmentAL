@@ -51,7 +51,7 @@ def create_augmented_dataset(
         )
 
     print(f"Trying to save on the saving path {saving_path}.")
-    if saving_path: 
+    if saving_path:
         augmented_full_set.save_to_disk(saving_path)
         with open(f"{saving_path}/augmented_indices.json", "w") as f:
             f.write(json.dumps(augmented_indices))

@@ -2,10 +2,13 @@ from core.augment import create_augmented_dataset
 from core.constants import AugmentationMethods, Datasets
 from datasets import load_dataset
 from script import create_raw_set
+
 datasets_path = "/data/horse/ws/s8822750-active-learning-data-augmentation/datasets"
 
 # dataset = load_dataset(Datasets.IMDB.value)
-raw_test, raw_train, augmented_indices = create_raw_set(Datasets.AG_NEWS.value, AugmentationMethods.BERT_SUBSTITUTE.value)
+raw_test, raw_train, augmented_indices = create_raw_set(
+    Datasets.AG_NEWS.value, AugmentationMethods.BERT_SUBSTITUTE.value
+)
 print(raw_train)
 for key in augmented_indices.keys():
     print(key)

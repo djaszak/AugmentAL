@@ -3,6 +3,8 @@ from script import run_script
 
 run_script(
     AugmentationMethods.BACK_TRANSLATION.value,
-    query_strategies=["AverageAcrossAugmentedQueryStrategy",],
-    dataset=Datasets.TWEET.value
+    query_strategies=[
+        "AverageAcrossAugmentedQueryStrategy",
+    ],
+    dataset=Datasets.TWEET.value,
 )

@@ -49,16 +49,17 @@ def run_active_learning_loop(
     # Aggressive, which will be the most aggressive one
 
     import psutil
+
     process = psutil.Process()
-    print(f"Memory before kappa: {process.memory_info().rss}") 
+    print(f"Memory before kappa: {process.memory_info().rss}")
     print("initializing stopping criteria")
     # Kappa Average
     kappa_average_conservative = KappaAverage(num_classes)
     kappa_average_middle_ground = KappaAverage(num_classes, kappa=0.9)
     kappa_average_aggressive = KappaAverage(num_classes, kappa=0.8)
-    print(f"Memory after kappa: {process.memory_info().rss}") 
+    print(f"Memory after kappa: {process.memory_info().rss}")
     # Delta F-Score
-    # print(f"Memory before delta f: {process.memory_info().rss}") 
+    # print(f"Memory before delta f: {process.memory_info().rss}")
     if num_classes is 2:
         delta_f_score_conservative = DeltaFScore(num_classes)
         delta_f_score_middle_ground = DeltaFScore(num_classes, threshold=0.07)
@@ -67,14 +68,14 @@ def run_active_learning_loop(
         delta_f_score_conservative = None
         delta_f_score_middle_ground = None
         delta_f_score_aggressive = None
-    print(f"Memory after delta f: {process.memory_info().rss}") 
+    print(f"Memory after delta f: {process.memory_info().rss}")
     # Classification Change
     classification_change_conservative = ClassificationChange(num_classes)
     classification_change_middle_ground = ClassificationChange(
         num_classes, threshold=0.04
     )
     classification_change_aggressive = ClassificationChange(num_classes, threshold=0.09)
-    print(f"Memory after classfication change: {process.memory_info().rss}") 
+    print(f"Memory after classfication change: {process.memory_info().rss}")
 
     # # Overall Uncertainty
     # overall_uncertainty_conservative = OverallUncertainty(num_classes)
@@ -108,7 +109,7 @@ def run_active_learning_loop(
                 base_strategy=average_across_augmented_strategy,
                 augmented_indices=augmented_indices,
             )
-        
+
         # Here we could add more custom configurations for the query strategies
         # query_strategies: dict[str, QueryStrategy] = {
         #     "RandomSampling": RandomSampling(),
@@ -128,11 +129,16 @@ def run_active_learning_loop(
         #         augmented_indices=augmented_indices,
         #     ),
         # }
-    print(f"Memory before creating small text datasets in percent: {process.memory_percent()}") 
-    print(f"Memory before creating small text datasets: {process.memory_info().rss}") 
+
+    print(
+        f"Memory before creating small text datasets in percent: {process.memory_percent()}"
+    )
+    print(f"Memory before creating small text datasets: {process.memory_info().rss}")
     test = create_small_text_dataset(raw_test)
     train = create_small_text_dataset(raw_train)
-    print(f"Memory after creating small text datasets in percent: {process.memory_percent()}") 
+    print(
+        f"Memory after creating small text datasets in percent: {process.memory_percent()}"
+    )
     print(f"Memory after creating small text datasets: {process.memory_info().rss}")
     chosen_strategy = (
         # query_strategies[query_strategy]
@@ -140,7 +146,7 @@ def run_active_learning_loop(
         if isinstance(query_strategy, str)
         else query_strategy
     )
-    print(f"Memory before creating active learner: {process.memory_info().rss}") 
+    print(f"Memory before creating active learner: {process.memory_info().rss}")
     active_learner, indices_labeled = create_active_learner(
         train_set=train,
         num_classes=num_classes,
@@ -230,7 +236,7 @@ def run_active_learning_loop(
                 )
             )
         else:
-           delta_f_score_conservative_history.append(False) 
+            delta_f_score_conservative_history.append(False)
         if delta_f_score_middle_ground:
             delta_f_score_middle_ground_history.append(
                 delta_f_score_middle_ground.stop(
@@ -238,7 +244,7 @@ def run_active_learning_loop(
                 )
             )
         else:
-           delta_f_score_middle_ground_history.append(False)
+            delta_f_score_middle_ground_history.append(False)
         if delta_f_score_aggressive:
             delta_f_score_aggressive_history.append(
                 delta_f_score_aggressive.stop(
@@ -246,7 +252,7 @@ def run_active_learning_loop(
                 )
             )
         else:
-           delta_f_score_aggressive_history.append(False)
+            delta_f_score_aggressive_history.append(False)
 
         classification_change_conservative_history.append(
             classification_change_conservative.stop(

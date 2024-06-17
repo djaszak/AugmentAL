@@ -17,10 +17,12 @@ class AugmentationType(enum.Enum):
     CONTEXTUAL_WORD_EMBS = "Name:ContextualWordEmbs_Aug,_Action:substitute,_Method:word"
     RANDOM_SWAP = "Name:RandomChar_Aug,_Action:swap,_Method:char"
 
+
 class BasePaths(enum.Enum):
     NO_AUG_TWEET = f"None/{Datasets.TWEET.value}"
     NO_AUG_IMDB = f"None/{Datasets.IMDB.value}"
     NO_AUG_AG_NEWS = f"None/{Datasets.AG_NEWS.value}"
+
 
 class AugmentedPaths(enum.Enum):
     SYNONYM_TWEET = f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.TWEET.value}"
@@ -28,23 +30,35 @@ class AugmentedPaths(enum.Enum):
     SYNONYM_AG_NEWS = f"{AugmentationType.SYNONYM_AUG.value}/{Datasets.AG_NEWS.value}"
     BERT_TWEET = f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.TWEET.value}"
     BERT_IMDB = f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.IMDB.value}"
-    BERT_AG_NEWS = f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.AG_NEWS.value}"
+    BERT_AG_NEWS = (
+        f"{AugmentationType.CONTEXTUAL_WORD_EMBS.value}/{Datasets.AG_NEWS.value}"
+    )
     RANDOM_SWAP_TWEET = f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.TWEET.value}"
     RANDOM_SWAP_IMDB = f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.IMDB.value}"
-    RANDOM_SWAP_AG_NEWS = f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.AG_NEWS.value}"
-    BACKTRANSLATION_TWEET = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.TWEET.value}"
-    BACKTRANSLATION_IMDB = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.IMDB.value}"
-    BACKTRANSLATION_AG_NEWS = f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.AG_NEWS.value}"
+    RANDOM_SWAP_AG_NEWS = (
+        f"{AugmentationType.RANDOM_SWAP.value}/{Datasets.AG_NEWS.value}"
+    )
+    BACKTRANSLATION_TWEET = (
+        f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.TWEET.value}"
+    )
+    BACKTRANSLATION_IMDB = (
+        f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.IMDB.value}"
+    )
+    BACKTRANSLATION_AG_NEWS = (
+        f"{AugmentationType.BACK_TRANSLATION_AUG.value}/{Datasets.AG_NEWS.value}"
+    )
 
 
-class AugmentedStrategies(enum.Enum):    
+class AugmentedStrategies(enum.Enum):
     AUGMENTED_OUTCOME = "AugmentedOutcomesQueryStrategy"
     AUGMENTED_SEARCH_SPACE = "AugmentedSearchSpaceExtensionQueryStrategy"
     AVERAGE_ACROSS_AUGMENTED = "AverageAcrossAugmentedQueryStrategy"
 
+
 class BaselineStrategies(enum.Enum):
     RANDOM_SAMPLING = "RandomSampling"
     BREAKING_TIES = "BreakingTies"
+
 
 QUERY_STRATEGIES_VERBOSE = {
     BaselineStrategies.RANDOM_SAMPLING.value: "Random Sampling",
@@ -98,9 +112,9 @@ STOPPING_CRITERIA_VERBOSE_SHORT = {
 }
 
 LATEX_TABLES_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables/"
-LATEX_TABLES_VARIANCE_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables_variance/" 
+LATEX_TABLES_VARIANCE_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables_variance/"
 LATEX_TABLES_STOP_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables_stop/"
-LATEX_TABLES_RAW_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables_raw/" 
+LATEX_TABLES_RAW_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables_raw/"
 LATEX_IMAGES_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/images/"
 
 QUERY_STRATEGY_COLUMN = "query_strategy"
@@ -133,4 +147,3 @@ AUGMENTATION_METHODS_DICT = {
     AugmentedPaths.BERT_AG_NEWS.value: "BERT",
     AugmentedPaths.RANDOM_SWAP_AG_NEWS.value: "Random Swap",
 }
-

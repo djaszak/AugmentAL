@@ -3,6 +3,8 @@ from script import run_script
 
 run_script(
     AugmentationMethods.BERT_SUBSTITUTE.value,
-    query_strategies=["AugmentedOutcomesQueryStrategy",],
-    dataset=Datasets.AG_NEWS.value
+    query_strategies=[
+        "AugmentedOutcomesQueryStrategy",
+    ],
+    dataset=Datasets.AG_NEWS.value,
 )

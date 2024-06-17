@@ -3,6 +3,8 @@ from script import run_script
 
 run_script(
     AugmentationMethods.RANDOM_SWAP.value,
-    query_strategies=["AugmentedSearchSpaceExtensionQueryStrategy",],
-    dataset=Datasets.AG_NEWS.value
+    query_strategies=[
+        "AugmentedSearchSpaceExtensionQueryStrategy",
+    ],
+    dataset=Datasets.AG_NEWS.value,
 )

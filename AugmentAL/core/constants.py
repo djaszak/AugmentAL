@@ -26,6 +26,7 @@ class AugmentationMethods(Enum):
     BERT_SUBSTITUTE = "Name:ContextualWordEmbs_Aug, Action:substitute, Method:word"
     BACK_TRANSLATION = "Name:BackTranslationAug, Action:substitute, Method:word"
 
+
 # class AugmentationMethods(Enum):
 #     RANDOM_SWAP = nac.RandomCharAug(action="swap")
 #     # RANDOM_INSERT = nac.RandomCharAug(action="insert")

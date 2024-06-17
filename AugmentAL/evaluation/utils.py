@@ -2,7 +2,14 @@ import os
 from pathlib import Path
 
 import pandas as pd
-from constants import AUGMENTATION_METHOD_COLUMN, DATASET_COLUMN, QUERY_STRATEGY_COLUMN, AugmentedPaths, BasePaths, AugmentationType
+from constants import (
+    AUGMENTATION_METHOD_COLUMN,
+    DATASET_COLUMN,
+    QUERY_STRATEGY_COLUMN,
+    AugmentedPaths,
+    BasePaths,
+    AugmentationType,
+)
 
 
 def get_json_files(folder_name: str):
@@ -41,7 +48,7 @@ def pad_dict_list(dict_list, padel):
 def extend_frames(frames, file, folder_name):
     with open(file, "r") as f:
         inter_list = []
-        for (idx, (_, series)) in enumerate(pd.read_json(f).items()):
+        for idx, (_, series) in enumerate(pd.read_json(f).items()):
             # Because of a small oversight, the stopping criteria do have one value less
             # than the other columns. This is why we need to orient it, and transpose it.
             padded_series = pad_dict_list(series[0], False)
@@ -62,6 +69,7 @@ def create_complete_frame(folder_name: str) -> tuple[pd.DataFrame, int]:
         frames = extend_frames(frames, file, folder_name)
 
     return pd.concat(frames), len(frames)
+
 
 def create_complete_frame_for_all_folders():
     frames = []

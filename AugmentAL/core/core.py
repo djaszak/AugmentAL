@@ -15,6 +15,7 @@ from small_text import (
     TransformersDataset,
     random_initialization_balanced,
 )
+
 # from small_text.integrations.transformers.classifiers.factories import (
 #     SetFitClassificationFactory,
 # )
@@ -43,7 +44,9 @@ def create_small_text_dataset(
     Returns:
         tuple[TransformersDataset, TransformersDataset, int]: A train and a test set and the num_labels
     """
-    tokenizer = AutoTokenizer.from_pretrained(TransformerModels.BERT.value, cache_dir=os.getenv('HF_CACHE'))
+    tokenizer = AutoTokenizer.from_pretrained(
+        TransformerModels.BERT.value, cache_dir=os.getenv("HF_CACHE")
+    )
 
     num_classes = dataset.features["label"].num_classes
 
@@ -96,23 +99,24 @@ def create_active_learner(
     # clf_factory = SetFitClassificationFactory(setfit_model_args, num_classes)
     # Code for Transformer
     import psutil
+
     process = psutil.Process()
-    print(f"Memory before transformer model: {process.memory_info().rss}") 
+    print(f"Memory before transformer model: {process.memory_info().rss}")
     transformer_model = TransformerModelArguments(model)
-#   kwargs = {"mini_batch_size": 32, "class_weight": None} -> This would have been the paper implementation. 
+    #   kwargs = {"mini_batch_size": 32, "class_weight": None} -> This would have been the paper implementation.
     kwargs = {"mini_batch_size": 32, "class_weight": "balanced"}
     if device:
         kwargs["device"] = device
-    print(f"Memory before classification factory: {process.memory_info().rss}") 
+    print(f"Memory before classification factory: {process.memory_info().rss}")
     clf_factory = TransformerBasedClassificationFactory(
         transformer_model, num_classes, kwargs=kwargs
     )
-    print(f"Memory before active learner: {process.memory_info().rss}") 
+    print(f"Memory before active learner: {process.memory_info().rss}")
     active_learner = PoolBasedActiveLearner(clf_factory, query_strategy, train_set)
     indices_labeled = warm_start_active_learner(
         active_learner, train_set.y, training_indices
     )
-    print(f"Memory after active learner: {process.memory_info().rss}") 
+    print(f"Memory after active learner: {process.memory_info().rss}")
 
     return active_learner, indices_labeled
 

@@ -8,6 +8,7 @@ from constants import (
 )
 from utils import create_complete_frame_for_all_folders
 
+
 def create_graph_for_augmentation_type():
     frame, n_frames = create_complete_frame_for_all_folders()
 
@@ -65,7 +66,7 @@ def create_graph_for_augmentation_type():
     g.set_titles(col_template="{col_name}", row_template="{row_name}")
 
     # Overlay baseline data on each subplot
-    baseline_colors = ['gray', 'blue']  # Define different colors for baselines
+    baseline_colors = ["gray", "blue"]  # Define different colors for baselines
     for (row_val, _), ax in g.axes_dict.items():
         # Filtering the baseline data for the current subplot's dataset
         subset = baseline_data[baseline_data["Dataset"] == row_val]
@@ -81,7 +82,7 @@ def create_graph_for_augmentation_type():
                     ax=ax,
                     label=f"Baseline ({query_strategy})",
                     color=baseline_colors[i % len(baseline_colors)],
-                    linestyle='--',
+                    linestyle="--",
                     # legend=False
                 )
 
@@ -90,10 +91,11 @@ def create_graph_for_augmentation_type():
         handles, labels = g.axes[0, 0].get_legend_handles_labels()
         g.legend.remove()
     # g.add_legend(title='Query Strategy', labels=labels, handles=handles, loc='upper left')
-    
+
     # Saving the plot
     plt.tight_layout()
     plt.savefig(f"{LATEX_IMAGES_PATH}/full_comparison.png")
     plt.show()
+
 
 create_graph_for_augmentation_type()
