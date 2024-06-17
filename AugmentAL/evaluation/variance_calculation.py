@@ -34,7 +34,7 @@ def create_latex_tables_for_augmented_strategies():
     results_dict = {
             "Dataset": [],
             "Query Strategy": [],
-            "Augmentation Method": [],
+            "DA": [],
             "Variance": [],
             "$\Delta$ Rnd": [],
             "$\Delta$ Brk": [],
@@ -47,8 +47,8 @@ def create_latex_tables_for_augmented_strategies():
     for folder_path in AugmentedPaths:
         # Now we would be in folder_path = AugmentedPaths.BACKTRANSLATION_TWEET
         # Which means we would be in the folder "Backtranslation/tweet_eval"
-        # So we have the DataAugmentation Method and the dataset.
-        # The baseline folder is the same as the folder, but with "None" instead of the augmentation method.
+        # So we have the DataDA and the dataset.
+        # The baseline folder is the same as the folder, but with "None" instead of the DA.
         # Because the latter part of the path represents the dataset.
         baseline_folder = f"None/{folder_path.value.split('/')[-1]}"
         for strategy in AugmentedStrategies:
@@ -67,10 +67,10 @@ def create_latex_tables_for_augmented_strategies():
                     dataset_mapping[folder_path.value.split("/")[-1]]
                 )
                 results_dict["Query Strategy"].append(
-                    QUERY_STRATEGIES_VERBOSE[strategy]
+                    QUERY_STRATEGIES_VERBOSE[strategy.value]
                 )
                 results_dict["Variance"].append(relevant_variance)
-                results_dict["Augmentation Method"].append(
+                results_dict["DA"].append(
                     AUGMENTATION_METHOD_VERBOSE[folder_path.value.split("/")[0]]
                 )
                 results_dict["$\Delta$ Rnd"].append(
@@ -83,32 +83,47 @@ def create_latex_tables_for_augmented_strategies():
     # results_dict represents all of the data that we could need for the table.
     # Now we need to split it correctly and save it to the correct files.
     frame = pd.DataFrame(results_dict)
-    augmentation_method_separated_frames = [
-        y for _, y in frame.groupby("Augmentation Method")
+    frame = pd.DataFrame(results_dict).sort_values(
+        by=["DA"]
+    )
+    frame.replace(
+        {
+            "Backtranslation": "Back",
+            "Random Swap": "Swap",
+            "Synonym": "Syn",
+        },
+        inplace=True,
+    )
+    # augmentation_method_separated_frames = [
+    #     y for _, y in frame.groupby("DA")
+    # ]
+    # for aug_frame in augmentation_method_separated_frames:
+    query_strategy_separated_frames = [
+        y for _, y in frame.groupby("Query Strategy")
     ]
-    for aug_frame in augmentation_method_separated_frames:
-        query_strategy_separated_frames = [
-            y for _, y in aug_frame.groupby("Query Strategy")
+    for query_frame in query_strategy_separated_frames:
+        current_augmentation_method = query_frame.at[
+            query_frame.index[0], "DA"
         ]
-        for query_frame in query_strategy_separated_frames:
-            current_augmentation_method = query_frame.at[
-                query_frame.index[0], "Augmentation Method"
-            ]
-            current_query_strategy = query_frame.at[
-                query_frame.index[0], "Query Strategy"
-            ]
-            query_frame.drop(
-                columns=["Augmentation Method", "Query Strategy"], inplace=True
-            )
-            dataset_seperated_frames = [y for _, y in query_frame.groupby("Dataset")]
-            for dataset_frame in dataset_seperated_frames:
-                dataset_name = dataset_frame.at[dataset_frame.index[0], "Dataset"]
-                dataset_frame.drop(columns=["Dataset"], inplace=True)
-                dataset_frame.to_latex(
-                    f"{LATEX_TABLES_VARIANCE_PATH}/{current_augmentation_method}_{current_query_strategy}_{dataset_name}.tex",
-                    index=False,
-                    float_format="{:.5f}".format,
+        current_query_strategy = query_frame.at[
+            query_frame.index[0], "Query Strategy"
+        ]
+        query_frame.drop(
+            columns=["Query Strategy"], inplace=True
+        )
+        dataset_seperated_frames = [y for _, y in query_frame.groupby("Dataset")]
+        for j, dataset_frame in enumerate(dataset_seperated_frames):
+            dataset_name = dataset_frame.at[dataset_frame.index[0], "Dataset"]
+            dataset_frame.drop(columns=["Dataset"], inplace=True)
+            if j > 0:
+                dataset_frame.drop(
+                    columns=["DA"], inplace=True
                 )
+            dataset_frame.to_latex(
+                f"{LATEX_TABLES_VARIANCE_PATH}/{current_query_strategy}_{dataset_name}.tex",
+                index=False,
+                float_format="{:.5f}".format,
+            )
 
 def create_latex_tables_for_base_strategies():
     results_dict = {
@@ -124,8 +139,8 @@ def create_latex_tables_for_base_strategies():
     for folder_path in BasePaths:
         # Now we would be in folder_path = AugmentedPaths.BACKTRANSLATION_TWEET
         # Which means we would be in the folder "Backtranslation/tweet_eval"
-        # So we have the DataAugmentation Method and the dataset.
-        # The baseline folder is the same as the folder, but with "None" instead of the augmentation method.
+        # So we have the DataDA and the dataset.
+        # The baseline folder is the same as the folder, but with "None" instead of the DA.
         # Because the latter part of the path represents the dataset.
         for strategy in BaselineStrategies:
                 # We then calculate the average accuracy for each of the query strategies.
@@ -137,7 +152,7 @@ def create_latex_tables_for_base_strategies():
                     dataset_mapping[folder_path.value.split("/")[-1]]
                 )
                 results_dict["Query Strategy"].append(
-                    QUERY_STRATEGIES_VERBOSE[strategy]
+                    QUERY_STRATEGIES_VERBOSE[strategy.value]
                 )
                 results_dict["Variance"].append(relevant_variance)
 
@@ -165,4 +180,4 @@ def create_latex_tables_for_base_strategies():
             ) 
 
 create_latex_tables_for_augmented_strategies()
-create_latex_tables_for_base_strategies()
+# create_latex_tables_for_base_strategies()

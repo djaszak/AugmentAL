@@ -85,8 +85,21 @@ STOPPING_CRITERIA_VERBOSE = {
     "classification_change_aggressive_history": "Classification Change Aggressive",
 }
 
+STOPPING_CRITERIA_VERBOSE_SHORT = {
+    "kappa_average_conservative_history": "KA Con",
+    "kappa_average_middle_ground_history": "KA MG",
+    "kappa_average_aggressive_history": "KA Aggr",
+    "delta_f_score_conservative_history": "DF Con",
+    "delta_f_score_middle_ground_history": "DF MG",
+    "delta_f_score_aggressive_history": "DF Aggr",
+    "classification_change_conservative_history": "CC Con",
+    "classification_change_middle_ground_history": "CC MG",
+    "classification_change_aggressive_history": "CC Aggr",
+}
+
 LATEX_TABLES_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables/"
 LATEX_TABLES_VARIANCE_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables_variance/" 
+LATEX_TABLES_STOP_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables_stop/"
 LATEX_TABLES_RAW_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/tables_raw/" 
 LATEX_IMAGES_PATH = "/Users/dennis/Library/Mobile Documents/com~apple~CloudDocs/Uni/DiplomArbeit/DiplomLatex/images/"
 
