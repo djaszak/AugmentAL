@@ -128,10 +128,12 @@ def run_active_learning_loop(
         #         augmented_indices=augmented_indices,
         #     ),
         # }
+    print(f"Memory before creating small text datasets in percent: {process.memory_percent()}") 
     print(f"Memory before creating small text datasets: {process.memory_info().rss}") 
     test = create_small_text_dataset(raw_test)
     train = create_small_text_dataset(raw_train)
-    print(f"Memory before creatin g small text datasets: {process.memory_info().rss}")
+    print(f"Memory after creating small text datasets in percent: {process.memory_percent()}") 
+    print(f"Memory after creating small text datasets: {process.memory_info().rss}")
     chosen_strategy = (
         # query_strategies[query_strategy]
         create_query_strategy(query_strategy)
