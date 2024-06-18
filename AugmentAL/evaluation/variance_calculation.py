@@ -115,9 +115,9 @@ def draw_bar_chart():
     g.set_axis_labels("Query Strategy", "Variance")
     g.set_titles(col_template="{col_name}", row_template="{row_name}")
 
-
     plt.savefig(f"{LATEX_IMAGES_PATH}/variance.png")
     print(f"Saved variance plot to {LATEX_IMAGES_PATH}/variance.png")
     # plt.show()
+
 
 draw_bar_chart()

@@ -108,7 +108,7 @@ def draw_bar_chart():
     display.width = 1000
     frame = get_data_frame()
     g = sns.catplot(
-       frame,
+        frame,
         kind="bar",
         x="i",
         y="Acc",
