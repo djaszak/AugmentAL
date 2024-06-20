@@ -50,7 +50,7 @@ def create_latex_tables_for_augmented_strategies():
     dataset_mapping = {
         "imdb": "IMDB",
         "ag_news": "AG News",
-        "tweet_eval": "Tweet Eval Hate",
+        "tweet_eval": "Tweet",
     }
     for folder_path in AugmentedPaths:
         # Now we would be in folder_path = AugmentedPaths.BACKTRANSLATION_TWEET
@@ -149,7 +149,7 @@ print(pd.DataFrame(results))
 #     dataset_mapping = {
 #         "imdb": "IMDB",
 #         "ag_news": "AG News",
-#         "tweet_eval": "Tweet Eval Hate",
+#         "tweet_eval": "Tweet",
 #     }
 #     for folder_path in AugmentedPaths:
 #         # Now we would be in folder_path = AugmentedPaths.BACKTRANSLATION_TWEET
@@ -262,7 +262,7 @@ print(pd.DataFrame(results))
 #     dataset_mapping = {
 #         "imdb": "IMDB",
 #         "ag_news": "AG News",
-#         "tweet_eval": "Tweet Eval Hate",
+#         "tweet_eval": "Tweet",
 #     }
 #     for folder_path in BasePaths:
 #         # Now we would be in folder_path = AugmentedPaths.BACKTRANSLATION_TWEET

@@ -46,18 +46,38 @@ def pad_dict_list(dict_list, padel):
 
 
 def extend_frames(frames, file, folder_name):
-    with open(file, "r") as f:
-        inter_list = []
-        for idx, (_, series) in enumerate(pd.read_json(f).items()):
-            # Because of a small oversight, the stopping criteria do have one value less
-            # than the other columns. This is why we need to orient it, and transpose it.
-            padded_series = pad_dict_list(series[0], False)
-            frame = pd.DataFrame(padded_series)
-            frame[QUERY_STRATEGY_COLUMN] = os.path.basename(file).split("_")[0]
-            frame[AUGMENTATION_METHOD_COLUMN] = folder_name.split("/")[0]
-            frame[DATASET_COLUMN] = folder_name.split("/")[1]
-            inter_list.append(frame)
-        frames.extend(inter_list)
+    if "None" in folder_name:
+        for augmentation_method in [
+            "BERT",
+            "Random Swap",
+            "Synonym",
+            "Backtranslation",
+        ]:
+            with open(file, "r") as f:
+                inter_list = []
+                for idx, (_, series) in enumerate(pd.read_json(f).items()):
+                    # Because of a small oversight, the stopping criteria do have one value less
+                    # than the other columns. This is why we need to orient it, and transpose it.
+                    padded_series = pad_dict_list(series[0], False)
+                    frame = pd.DataFrame(padded_series)
+                    frame[QUERY_STRATEGY_COLUMN] = os.path.basename(file).split("_")[0]
+                    frame[AUGMENTATION_METHOD_COLUMN] = augmentation_method
+                    frame[DATASET_COLUMN] = folder_name.split("/")[1]
+                    inter_list.append(frame)
+                frames.extend(inter_list)
+    else:
+        with open(file, "r") as f:
+            inter_list = []
+            for idx, (_, series) in enumerate(pd.read_json(f).items()):
+                # Because of a small oversight, the stopping criteria do have one value less
+                # than the other columns. This is why we need to orient it, and transpose it.
+                padded_series = pad_dict_list(series[0], False)
+                frame = pd.DataFrame(padded_series)
+                frame[QUERY_STRATEGY_COLUMN] = os.path.basename(file).split("_")[0]
+                frame[AUGMENTATION_METHOD_COLUMN] = folder_name.split("/")[0]
+                frame[DATASET_COLUMN] = folder_name.split("/")[1]
+                inter_list.append(frame)
+            frames.extend(inter_list)
     return frames
 
 
@@ -96,4 +116,5 @@ def get_query_strategy_frame(folder_name: str, query_strategy: str):
         frame, _ = create_complete_frame(folder_name)
     except FileNotFoundError:
         return pd.DataFrame()
+    # print(frame)
     return frame[frame[QUERY_STRATEGY_COLUMN] == query_strategy]

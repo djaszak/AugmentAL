@@ -39,7 +39,7 @@ def create_frame():
     dataset_mapping = {
         "imdb": "IMDB",
         "ag_news": "AG News",
-        "tweet_eval": "Tweet Eval Hate",
+        "tweet_eval": "Tweet",
     }
     for folder_path in AugmentedPaths:
         for strategy in AugmentedStrategies:

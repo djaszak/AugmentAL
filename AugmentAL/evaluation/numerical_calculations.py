@@ -1,10 +1,12 @@
+import constants
+import matplotlib
+import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
 from constants import (
     AUGMENTATION_METHOD_VERBOSE,
-    QUERY_STRATEGIES_VERBOSE,
     LATEX_IMAGES_PATH,
+    QUERY_STRATEGIES_VERBOSE,
     AugmentedPaths,
     AugmentedStrategies,
     BaselineStrategies,
@@ -50,7 +52,7 @@ def get_data_frame():
     dataset_mapping = {
         "imdb": "IMDB",
         "ag_news": "AG News",
-        "tweet_eval": "Tweet Eval Hate",
+        "tweet_eval": "Tweet",
     }
     for folder_path in AugmentedPaths:
         for strategy in AugmentedStrategies:
@@ -107,6 +109,12 @@ def draw_bar_chart():
     display.max_colwidth = 199
     display.width = 1000
     frame = get_data_frame()
+    font = {
+        # "weight": "bold",
+        "size": 10,
+    }
+
+    matplotlib.rc("font", **font)
     g = sns.catplot(
         frame,
         kind="bar",
@@ -124,6 +132,7 @@ def draw_bar_chart():
     g.set_axis_labels("Iterations", "Test Accuracy")
     g.set_titles(col_template="{col_name}", row_template="{row_name}")
 
+    plt.rcParams.update({"figure.dpi": 1200})
     plt.savefig(f"{LATEX_IMAGES_PATH}/average_accuracy_over_iterations.png")
     # plt.show()
 
