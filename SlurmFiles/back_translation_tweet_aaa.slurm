@@ -21,4 +21,4 @@ export HF_MODULE_CACHE="/data/horse/ws/s8822750-active-learning-data-augmentatio
 export TRANSFORMERS_CACHE="/data/horse/ws/s8822750-active-learning-data-augmentation/hf-cache"
 export HF_DATASETS_CACHE="/data/horse/ws/s8822750-active-learning-data-augmentation/hf-cache"
 
-srun python /home/s8822750/AugmentAL/AugmentAL/back_translation_tweet_aaa.py
+srun python /data/horse/ws/s8822750-active-learning-data-augmentation/AugmentAL/AugmentAL/back_translation_tweet_aaa.py
